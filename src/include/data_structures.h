@@ -6,14 +6,14 @@ struct grammar {
 	int                distinguished_symbol_index;
 };
 
-struct production {
-	struct symbol_array left_part;
-	struct symbol_array right_part;
-};
-
 struct symbol_array {
 	int            size;
 	struct symbol* symbols;
+};
+
+struct production {
+	struct symbol_array left_part;
+	struct symbol_array right_part;
 };
 
 struct symbol {
