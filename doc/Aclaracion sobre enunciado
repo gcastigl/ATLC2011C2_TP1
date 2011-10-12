@@ -1,0 +1,3 @@
+No se había aclarado en el enunciado si una especificación ".dot" puede tener una transición con etiqueta lambda. 
+Asumiremos que sí, y esto puede suceder si la etiqueta es "\\". También puede tenerse en una transición una etiqueta con dos o más simbolos (en lugar de varias transiciones por separado). En esos casos, la separación es con /. Por ejemplo: si se tienen tres transiciones del nodo "0" al nodo "1", cuyas etiquetas son, respectivamente, "a","b"y "lambda" se puede tener en el .dot:
+nodo0->nodo1 [label = "a/b/\\"]
