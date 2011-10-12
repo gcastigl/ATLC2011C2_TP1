@@ -1,3 +1,5 @@
+typedef enum {false = 0, true} bool;
+
 struct grammar {
 	int                number_symbols;
 	char**             symbol_names;
