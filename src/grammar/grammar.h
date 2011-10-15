@@ -2,16 +2,18 @@
 #define __GRAMMAR__
 
 #define MAX_SYMBOLS 1000
+#define add_terminal(x,y) add_symbol((x), 1, (y))
+#define add_non_terminal(x,y) add_symbol((x), 0, (y))
 
-typedef enum {false = 0, true} bool;
+#include <stdbool.h>
 
 struct grammar {
-	int                number_symbols;
-	char**             symbol_names;
-	int                number_productions;
-	struct production* productions;
-	int                distinguished_symbol_index;
-    bool               right_aligned;
+	int                                  number_symbols;
+    struct symbol[MAX_SYMBOLS]           symbols;	
+    int                                  number_productions;
+	struct production*                   productions;
+	char                                 distinguished_symbol;
+    bool                                 right_aligned;
 };
 
 
@@ -22,17 +24,13 @@ struct production {
 
 struct symbol {
 	bool terminal;
-	int  symbol_name_index;
+    char representation;
 };
 
-struct symbol_table {
-    int count;
-    struct symbol_reference[MAX_SYMBOLS];
-}
-
-struct symbol_reference {
-    int symbol_name_index;
-    char* symbol_name;
-}
+struct grammar* create_grammar();
+int destroy_grammar(struct grammar* grammar);
+int add_symbol(struct grammar* grammar, bool terminal, char symbol_name);
+int add_production(struct grammar* grammar, char left_part, char* right_part);
+int set_distinguished_symbol(struct grammar* grammar, char symbol);
 
 #endif
