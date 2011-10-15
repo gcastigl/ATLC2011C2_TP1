@@ -4,6 +4,8 @@
 #include <string.h>
 
 static bool symbol_exists(struct grammar* grammar, char symbol);
+static bool symbol_is_terminal(struct grammar* grammar, char symbol);
+static bool symbol_is_not_terminal(struct grammar* grammar, char symbol);
 
 struct grammar* create_grammar() {
     struct grammar* grammar = malloc(sizeof(struct grammar));
@@ -45,8 +47,11 @@ bool symbol_exists(struct grammar* grammar, char symbol) {
 }
 
 int set_distinguished_symbol(struct grammar* grammar, char symbol) {
-    grammar->distinguished_symbol = symbol;
-    return 0;
+    if(symbol_is_not_terminal(grammar, symbol)) {
+        grammar->distinguished_symbol = symbol;
+        return 0;
+    }
+    return -1;
 }   
 
 int add_production(struct grammar* grammar, char left_part, char* right_part) {
@@ -64,19 +69,19 @@ int add_production(struct grammar* grammar, char left_part, char* right_part) {
             if (!symbol_exists(grammar, right_part[1])) {
                 return -1;
             }
-            if (symbol_is_terminal(grammar, right_part[0]) && !symbol_is_terminal(grammar, right_part[1])) {
-                grammar_alignment =  RIGHT_ALIGNED;
-            } else if (!symbol_is_terminal(grammar, right_part[0]) && symbol_is_terminal(grammar, right_part[1])) {
-                grammar_alignment = LEFT_ALIGNED;
+            if (symbol_is_terminal(grammar, right_part[0]) && symbol_is_not_terminal(grammar, right_part[1])) {
+                grammar->alignment =  RIGHT_ALIGNED;
+            } else if (symbol_is_not_terminal(grammar, right_part[0]) && symbol_is_terminal(grammar, right_part[1])) {
+                grammar->alignment = LEFT_ALIGNED;
             } else {
                 return -1;
             }
         } else if (grammar->alignment == RIGHT_ALIGNED) {
-            if(!(symbol_is_terminal(grammar, right_part[0]) && !symbol_is_terminal(grammar, right_part[1]))) {
+            if(!(symbol_is_terminal(grammar, right_part[0]) && symbol_is_not_terminal(grammar, right_part[1]))) {
                 return -1;
             }
         } else {
-            if(!(!symbol_is_terminal(grammar, right_part[0]) && symbol_is_termianl(grammar, right_part[1]))){
+            if(!(symbol_is_not_terminal(grammar, right_part[0]) && symbol_is_terminal(grammar, right_part[1]))){
                 return -1;
             }
         }
@@ -98,4 +103,21 @@ int add_production(struct grammar* grammar, char left_part, char* right_part) {
     (grammar->number_productions)++;
 
     return 0;
+}
+
+bool symbol_is_terminal(struct grammar* grammar, char symbol) {
+    int i;
+    for (i = 0; i < grammar->number_symbols; i++) {
+        if (grammar->symbols[i].representation == symbol && grammar->symbols[i].terminal) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool symbol_is_not_terminal(struct grammar* grammar, char symbol) {
+    if (symbol_exists(grammar, symbol) && !symbol_is_terminal(grammar, symbol)) {
+        return true;
+    }
+    return false;
 }
