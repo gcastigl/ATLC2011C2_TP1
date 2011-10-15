@@ -2,18 +2,21 @@
 #define __GRAMMAR__
 
 #define MAX_SYMBOLS 1000
+#define MAX_PRODUCTIONS 1000
 #define add_terminal(x,y) add_symbol((x), 1, (y))
 #define add_non_terminal(x,y) add_symbol((x), 0, (y))
 
 #include <stdbool.h>
 
+enum grammar_state { UNDEFINED_ALIGNMENT, RIGHT_ALIGNED, LEFT_ALIGNED };
+
 struct grammar {
 	int                                  number_symbols;
     struct symbol[MAX_SYMBOLS]           symbols;	
     int                                  number_productions;
-	struct production*                   productions;
+	struct production[MAX_PRODUCTIONS]   productions;
 	char                                 distinguished_symbol;
-    bool                                 right_aligned;
+    enum grammar_state                   alignment;
 };
 
 
