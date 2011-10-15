@@ -30,10 +30,16 @@ struct grammar {
 };
 
 struct grammar* create_grammar();
+
 int destroy_grammar(struct grammar* grammar);
+
 int add_symbol(struct grammar* grammar, bool terminal, char symbol_name);
+
 int add_production(struct grammar* grammar, char left_part, char* right_part);
+
 int set_distinguished_symbol(struct grammar* grammar, char symbol);
+
+struct grammar* as_right_normal_form(struct grammar* source);
 
 #endif
 

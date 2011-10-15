@@ -4,6 +4,8 @@ static int char_map[255];
 
 void automata_output(FILE* outfile, struct grammar* grammar) {
 
+    memset(char_map, 0, sizeof(char_map));
+
     fprintf(outfile, "digraph{\n\trankdir=\"LR\";\n\t//Nodos\n\t");
 
     for (int i = 0; i < grammar->number_symbols; i++) {
@@ -11,7 +13,7 @@ void automata_output(FILE* outfile, struct grammar* grammar) {
         char_map[grammar->symbols[i].left_part.representation] = i;
     }
 
-    char previous_map = char_map[grammar->distinguished_symbol];
+    int previous_map = char_map[grammar->distinguished_symbol];
     char_map[grammar->distinguished_symbol] = 0;
     char_map[grammar->symbols[0].left_part.representation] = previous_map;
 

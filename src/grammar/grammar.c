@@ -3,10 +3,6 @@
 #include <stdbool.h>
 #include <string.h>
 
-static bool symbol_exists(struct grammar* grammar, char symbol);
-static bool symbol_is_terminal(struct grammar* grammar, char symbol);
-static bool symbol_is_not_terminal(struct grammar* grammar, char symbol);
-
 struct grammar* create_grammar() {
     struct grammar* grammar = malloc(sizeof(struct grammar));
     
@@ -19,6 +15,16 @@ struct grammar* create_grammar() {
     grammar->alignment = UNDEFINED_ALIGNMENT;
 
     return grammar;
+}
+
+static bool symbol_exists(struct grammar* grammar, char symbol) {
+
+    for (int i = 0; i < grammar->number_symbols; i++) {
+        if (grammar->symbols[i].representation == symbol) {
+            return false;
+        }
+    }
+    return false;
 }
 
 static bool symbol_is_terminal(struct grammar* grammar, char symbol) {
@@ -42,7 +48,6 @@ static bool symbol_is_not_terminal(struct grammar* grammar, char symbol) {
     return false;
 }
 
-
 int destroy_grammar(struct grammar* grammar) {
     free(grammar);
     return 0;
@@ -56,16 +61,6 @@ int add_symbol(struct grammar* grammar, bool terminal, char symbol) {
     grammar->symbols[grammar->number_symbols].representation = symbol;
     (grammar->number_symbols)++;
     return 0;
-}
-
-bool symbol_exists(struct grammar* grammar, char symbol) {
-    int i;
-    for (i = 0; i < grammar->number_symbols; i++) {
-        if (grammar->symbols[i].representation == symbol) {
-            return false;
-        }
-    }
-    return false;
 }
 
 int set_distinguished_symbol(struct grammar* grammar, char symbol) {
@@ -141,6 +136,36 @@ int add_production(struct grammar* grammar, char left_part, char* right_part) {
     (grammar->number_productions)++;
 
     return 0;
+}
+
+static void production_bfs(struct grammar* grammar,
+    (void*)f(struct grammar*, void*, void*), void*)
+{
+}
+
+static void check_reachable(struct grammar* grammar, 
+    struct production* production, bool* reach
+){
+    if (symbol_is_not_terminal(grammar,
+            production->right_part[0].representation)) 
+    {
+        reach[production->right_part[0].representation] = true;
+    }
+    if (symbol_is_not_terminal(grammar,
+            production->right_part[1].representation)) 
+    {
+        reach[production->right_part[1].representation] = true;
+    }
+}
+
+struct grammar* take_out_unreachable(struct grammar* source) {
+    
+    struct grammar* new = create_grammar();    
+
+    bool reachable_symbol[MAX_SYMBOLS];
+    memset(reachable_symbol, 0, MAX_SYMBOLS);
+
+    production_bfs(source, check_reachable, reachable_symbol);
 }
 
 struct grammar* to_right_normal_form(struct grammar* source) {
