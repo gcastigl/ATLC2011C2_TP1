@@ -5,13 +5,17 @@
 %%
 
 %%
-int yywrap(void) {
+static int yywrap(void) {
 	return 1;
 }
 
-int main(void) {
-	yyin = fopen("../resources/archivos\ gr/gr1.gr", "r");
-	yylex();
-	return 0;
+struct grammar* parse_grammar_file(char* filename) {
+
+    struct grammar* g = create_grammar();
+
+    yyin = fopen(filename, "r");
+    yylex();
+
+    return g;
 }
 

@@ -11,8 +11,8 @@
 enum grammar_state { UNDEFINED_ALIGNMENT, RIGHT_ALIGNED, LEFT_ALIGNED };
 
 struct grammar {
-	int                                  number_symbols;
-    struct symbol[MAX_SYMBOLS]           symbols;	
+    int                                  number_symbols;
+    struct symbol[MAX_SYMBOLS]           symbols;
     int                                  number_productions;
 	struct production[MAX_PRODUCTIONS]   productions;
 	char                                 distinguished_symbol;
@@ -21,12 +21,12 @@ struct grammar {
 
 
 struct production {
-	struct symbol left_part;
-	struct symbol[2] right_part;
+    struct symbol left_part;
+    struct symbol[2] right_part;
 };
 
 struct symbol {
-	bool terminal;
+    bool terminal;
     char representation;
 };
 
@@ -37,3 +37,4 @@ int add_production(struct grammar* grammar, char left_part, char* right_part);
 int set_distinguished_symbol(struct grammar* grammar, char symbol);
 
 #endif
+
