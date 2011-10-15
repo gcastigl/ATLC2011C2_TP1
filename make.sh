@@ -5,13 +5,19 @@ rm -rf bin
 mkdir bin
 cd ./bin
 
+# variables
+FLAGS='-Wall -pedantic -std=c99'
+INCLUDE='../src/'
+
 # Compile lex files
-flex ../src/lexers/automata_parser.lex -o automata_parser.c
-flex ../src/lexers/grammar_parser.lex -o grammar_parser.c
-gcc -oparser *.c -lfl
+touch automata_parser.c
+touch grammar_parser.c
+flex -o automata_parser.c ../src/lexers/automata_parser.lex
+flex -o grammar_parser.c ../src/lexers/grammar_parser.lex
+gcc -I$INCLUDE -oparser *.c -lfl
 
 # Compile other C sources
-# TODO
+gcc -I$INCLUDE -c ../src/grammar/grammar.c ../src/main.c ../src/output/grammar_out.c ../src/output/automata_out.c $FLAGS
 
 # Link all together
 # TODO

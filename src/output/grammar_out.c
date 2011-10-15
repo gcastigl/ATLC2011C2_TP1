@@ -14,7 +14,7 @@ void output_symbols(bool terminal_required, FILE* outfile,
             }
             first = false;
 
-            fprintf(outfile, grammar->symbols[i].representation);
+            fprintf(outfile, "%c", grammar->symbols[i].representation);
         }
     }
 }
@@ -60,12 +60,14 @@ void grammar_output(FILE* outfile, struct grammar* grammar) {
                     first_symbol = false;
 
                     fprintf(outfile, "%c",
-                        grammar->productions[j].right_part[0]
+                        grammar->productions[j].right_part[0].representation
                     );
 
-                    if (grammar->productions[j].right_part[0] != '\0') {
+                    if (grammar->productions[j].right_part[0].representation
+                        != '\0')
+                    {
                         fprintf(outfile, "%c",
-                            grammar->productions[j].right_part[1]
+                            grammar->productions[j].right_part[1].representation
                         );
                     }
                 }

@@ -10,24 +10,23 @@
 
 enum grammar_state { UNDEFINED_ALIGNMENT, RIGHT_ALIGNED, LEFT_ALIGNED };
 
-struct grammar {
-    int                                  number_symbols;
-    struct symbol[MAX_SYMBOLS]           symbols;
-    int                                  number_productions;
-	struct production[MAX_PRODUCTIONS]   productions;
-	char                                 distinguished_symbol;
-    enum grammar_state                   alignment;
-};
-
-
-struct production {
-    struct symbol left_part;
-    struct symbol[2] right_part;
-};
-
 struct symbol {
     bool terminal;
     char representation;
+};
+
+struct production {
+    struct symbol    left_part;
+    struct symbol    right_part[2];
+};
+
+struct grammar {
+    int                 number_symbols;
+    struct symbol       symbols[MAX_SYMBOLS];
+    int                 number_productions;
+    struct production   productions[MAX_PRODUCTIONS];
+    char                distinguished_symbol;
+    enum grammar_state  alignment;
 };
 
 struct grammar* create_grammar();

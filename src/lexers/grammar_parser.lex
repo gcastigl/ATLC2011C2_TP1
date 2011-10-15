@@ -1,6 +1,7 @@
 %{
 #include <stdlib.h>
 #include <ctype.h>
+#include "grammar/grammar.h"
 %}
 %%
 
