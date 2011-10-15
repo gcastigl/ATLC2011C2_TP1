@@ -1,3 +1,6 @@
+#ifndef __GRAMMAR__
+#define __GRAMMAR__
+
 #define MAX_SYMBOLS 1000
 
 typedef enum {false = 0, true} bool;
@@ -31,3 +34,5 @@ struct symbol_reference {
     int symbol_name_index;
     char* symbol_name;
 }
+
+#endif
