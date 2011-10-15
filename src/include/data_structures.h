@@ -1,3 +1,5 @@
+#define MAX_SYMBOLS 1000
+
 typedef enum {false = 0, true} bool;
 
 struct grammar {
@@ -6,16 +8,13 @@ struct grammar {
 	int                number_productions;
 	struct production* productions;
 	int                distinguished_symbol_index;
+    bool               right_aligned;
 };
 
-struct symbol_array {
-	int            size;
-	struct symbol* symbols;
-};
 
 struct production {
-	struct symbol_array left_part;
-	struct symbol_array right_part;
+	struct symbol left_part;
+	struct symbol[2] right_part;
 };
 
 struct symbol {
@@ -23,3 +22,12 @@ struct symbol {
 	int  symbol_name_index;
 };
 
+struct symbol_table {
+    int count;
+    struct symbol_reference[MAX_SYMBOLS];
+}
+
+struct symbol_reference {
+    int symbol_name_index;
+    char* symbol_name;
+}
