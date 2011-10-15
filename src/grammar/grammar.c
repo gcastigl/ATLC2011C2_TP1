@@ -99,3 +99,34 @@ int add_production(struct grammar* grammar, char left_part, char* right_part) {
 
     return 0;
 }
+
+struct grammar* to_right_normal_form(struct grammar* source) {
+
+    struct grammar* new = create_grammar();    
+
+    for (int i = 0; i < source->number_symbols; i++) {
+        add_symbol(new, source->symbols[i].terminal,
+            source->symbols[i].representation
+        );
+    }
+
+    // This will be our 'M' symbol. We choose something not printable.
+    add_symbol(new, false, '\t');
+
+    set_distinguished_symbol(new, '\t');
+
+    for (int i = 0; i < source->number_productions; i++) {
+
+        char right_part[3] = {0, 0, 0};
+
+        right_part[0] = source->productions[i].right_part[0].representation;
+        right_part[1] = source->productions[i].right_part[1].representation;
+
+        add_production(new, source->productions[i].left_part.representation,
+            right_part
+        );
+    }
+
+    return new;
+}
+
