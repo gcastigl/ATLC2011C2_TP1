@@ -34,3 +34,4 @@ int add_production(struct grammar* grammar, char left_part, char* right_part);
 int set_distinguished_symbol(struct grammar* grammar, char symbol);
 
 #endif
+
