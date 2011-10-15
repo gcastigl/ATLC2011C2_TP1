@@ -8,22 +8,22 @@
 #include <stdbool.h>
 
 struct grammar {
-	int                                  number_symbols;
-    struct symbol[MAX_SYMBOLS]           symbols;	
+    int                                  number_symbols;
+    struct symbol[MAX_SYMBOLS]           symbols;
     int                                  number_productions;
-	struct production*                   productions;
-	char                                 distinguished_symbol;
+    struct production*                   productions;
+    char                                 distinguished_symbol;
     bool                                 right_aligned;
 };
 
 
 struct production {
-	struct symbol left_part;
-	struct symbol[2] right_part;
+    struct symbol left_part;
+    struct symbol[2] right_part;
 };
 
 struct symbol {
-	bool terminal;
+    bool terminal;
     char representation;
 };
 
