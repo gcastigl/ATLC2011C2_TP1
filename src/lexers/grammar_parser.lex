@@ -41,10 +41,10 @@ CHAR [a-zA-Z0-9]
 
 ID          [0-9]+
 
-DIGRAPH     digraph[:blank:]*\{
+DIGRAPH     digraph
 
-FINALDEF    node\[shape=doublecircle][:blank:]Node
-NODEDEF     node\[shape=circle][:blank:]Node
+FINALDEF    node\[shape=doublecircle]\ Node
+NODEDEF     node\[shape=circle]\ Node
 
 TRANS_A     Node
 TRANS_B     ->Node
@@ -59,12 +59,12 @@ TRANS_C     [:blank:]\[label=\"
 %%
 
 {BEGINGRAMMAR}  {
-                    BEGIN(inGrammar);
-                }
+                BEGIN(inGrammar);
+}
 
 <inGrammar>\{   {
-                    BEGIN(inNonTerminal);
-                }
+                BEGIN(inNonTerminal);
+}
 
 <inNonTerminal>{
     {CHAR}  {
@@ -156,67 +156,85 @@ TRANS_C     [:blank:]\[label=\"
             }
 }
 
-{DIGRAPH}           {
-                        BEGIN(automataParser);
-                    }
-
-<automataParser>{
-    {FINALDEF}      {
-                        final = true;
-                        BEGIN(scanNodeSymbol);
-                    }
-
-    {NODEDEF}           BEGIN(scanNodeSymbol);
-
-
-    {TRANS_A}           BEGIN(scanTransB);
-
+{DIGRAPH}   {
+                BEGIN(automataParser);
 }
 
-<scanNodeSymbol>{ID} {
-                        b->final_state[b->number_states] = final;
-                        final = false;
-                        b->states[b->number_states++] = yytext[0];
-                        BEGIN(automataParser);
-                    }
+<automataParser> {
+    {FINALDEF}  {
+                final = true;
+                printf("finaldef");
+                BEGIN(scanNodeSymbol);
+    }
 
-<scanTransB>{ID}        b->transitions[b->number_states].from = yytext[0];
+    {NODEDEF}   {
+                final = false;
+                printf("notfinal");
+                BEGIN(scanNodeSymbol);
+    }
 
-<scanTransB>{TRANS_B}   BEGIN(scanTransC);
+    {TRANS_A}   {
+                printf("trans");
+                BEGIN(scanTransB);
+    }
+}
 
-<scanTransC>{ID}        b->transitions[b->number_transitions].to = yytext[0];
+<scanNodeSymbol> {
+    {ID} {
+                b->final_state[b->number_states] = final;
+                b->states[b->number_states++] = yytext[0];
+                BEGIN(automataParser);
+    }
+}
 
-<scanTransC>{TRANS_C}   BEGIN(scanTransD);
+<scanTransB> {
+    {ID}        b->transitions[b->number_states].from = yytext[0];
 
-<scanTransD>\\\\    {
-                        b->transitions[b->number_transitions++].symbol = '\\';
+    {TRANS_B}   BEGIN(scanTransC);
+}
 
-                        if (!used['\\']) {
-                            used['\\'] = true;
-                            b->chars[b->number_chars++] = '\\';
-                        }
-                    }
+<scanTransC> {
+    {ID}    {
+                b->transitions[b->number_transitions].to = yytext[0];
+    }
 
-<scanTransD>{CHAR}  {
-                        b->transitions[b->number_transitions++].symbol =
-                            yytext[0];
+    {TRANS_C} {
+                BEGIN(scanTransD);
+    }
+}
 
-                        if (!used[(int)yytext[0]]) {
-                            used[(int)yytext[0]] = true;
-                            b->chars[b->number_chars++] = yytext[0];
-                        }
-                    }
+<scanTransD> {
 
-<scanTransD>\/       {
-                        b->transitions[b->number_transitions].from =
-                            b->transitions[b->number_transitions-1].from;
-                        b->transitions[b->number_transitions].to =
-                            b->transitions[b->number_transitions-1].to;
-                    }
+    \\\\     {
+                b->transitions[b->number_transitions++].symbol = '\\';
 
-<scanTransD>\"      {
-                        BEGIN(automataParser);
-                    }
+                if (!used['\\']) {
+                    used['\\'] = true;
+                    b->chars[b->number_chars++] = '\\';
+                }
+    }
+
+    >{CHAR}  {
+                b->transitions[b->number_transitions++].symbol =
+                    yytext[0];
+
+                if (!used[(int)yytext[0]]) {
+                    used[(int)yytext[0]] = true;
+                    b->chars[b->number_chars++] = yytext[0];
+                }
+    }
+
+    >\/      {
+                b->transitions[b->number_transitions].from =
+                    b->transitions[b->number_transitions-1].from;
+                b->transitions[b->number_transitions].to =
+                    b->transitions[b->number_transitions-1].to;
+    }
+
+    \"       {
+                BEGIN(automataParser);
+    }
+}
 
 .                       // Pass
 
