@@ -130,7 +130,7 @@ static void check_reachable(struct grammar* grammar,
     struct production* production, bool* reach
 ){
 
-    for (int s = 0; s <= 0; s++) {
+    for (int s = 0; s <= 1; s++) {
         int repr = production->right_part[s].representation;
         reach[repr] = true;
     }
@@ -153,6 +153,7 @@ static struct grammar* take_out_unreachable(struct grammar* source) {
         reachable_symbol
     );
 
+    reachable_symbol[source->distinguished_symbol] = true;
     for (int i = 0; i < source->number_symbols; i++) {
         if (source->symbols[i].terminal == true) {
             reachable_symbol[(int)source->symbols[i].representation] = true;
@@ -225,10 +226,19 @@ static struct grammar* replace_lambda_with_M(struct grammar* source) {
             right_part[0] = '\t';
         }
 
+        if (right_part[1] == '\0') {
+            right_part[1] = right_part[0];
+            right_part[0] = '\t';
+        }
+
         add_production(new, source->productions[i].left_part.representation,
             right_part
         );
     }
+
+    char lambda_transition[2] = { '\\', '\0' };
+    add_symbol(new, true, '\\');
+    add_production(new, '\t', lambda_transition);
 
     return new;
 }
@@ -316,7 +326,6 @@ static struct grammar* reverse_productions(struct grammar* source) {
 
     set_distinguished_symbol(new, '\t');
 
-    // FIXME: me parece que me estoy olvidando algo acá
     for (int i = 0; i < source->number_productions; i++) {
         
         char new_production[4] = {0, 0, 0, 0};
@@ -333,9 +342,10 @@ static struct grammar* reverse_productions(struct grammar* source) {
             new_production[2] = temp; 
         }
 
-        if (new_production[0] != source->distinguished_symbol) {
-            add_production(new, new_production[0], new_production+1);
+        if (new_production[2] == source->distinguished_symbol) {
+            new_production[2] = '\t';
         }
+        add_production(new, new_production[0], new_production+1);
     }
 
     return new;
@@ -452,9 +462,11 @@ struct grammar* as_right_normal_form(struct grammar* source) {
     }
 
     struct grammar* new = replace_lambda_with_M(source);
+    destroy_grammar(source);
     struct grammar* reverse = reverse_productions(new);
     destroy_grammar(new);
     new = take_out_unreachable(reverse);
+    destroy_grammar(reverse);
     
     while (has_unitary_productions(new)) {
         struct grammar* replace = take_out_unitary_productions(new);
