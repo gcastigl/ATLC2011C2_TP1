@@ -17,7 +17,7 @@ struct grammar* create_grammar() {
     return grammar;
 }
 
-static bool symbol_exists(struct grammar* grammar, char symbol) {
+bool symbol_exists(struct grammar* grammar, char symbol) {
 
     for (int i = 0; i < grammar->number_symbols; i++) {
         if (grammar->symbols[i].representation == symbol) {
@@ -27,7 +27,7 @@ static bool symbol_exists(struct grammar* grammar, char symbol) {
     return false;
 }
 
-static bool symbol_is_terminal(struct grammar* grammar, char symbol) {
+bool symbol_is_terminal(struct grammar* grammar, char symbol) {
     int i;
     for (i = 0; i < grammar->number_symbols; i++) {
         if (grammar->symbols[i].representation == symbol &&
@@ -39,7 +39,7 @@ static bool symbol_is_terminal(struct grammar* grammar, char symbol) {
     return false;
 }
 
-static bool symbol_is_not_terminal(struct grammar* grammar, char symbol) {
+bool symbol_is_not_terminal(struct grammar* grammar, char symbol) {
     if (symbol_exists(grammar, symbol) &&
         !symbol_is_terminal(grammar, symbol))
     {
@@ -138,64 +138,4 @@ int add_production(struct grammar* grammar, char left_part, char* right_part) {
     return 0;
 }
 
-static void production_bfs(struct grammar* grammar,
-    void* (*f) (struct grammar*, void*, void*), void* data)
-{
-}
-
-static void check_reachable(struct grammar* grammar, 
-    struct production* production, bool* reach
-){
-    int repr = production->right_part[0].representation;
-    if (symbol_is_not_terminal(grammar, repr)) {
-        reach[repr] = true;
-    }
-
-    repr = production->right_part[1].representation;
-    if (symbol_is_not_terminal(grammar, repr)) {
-        reach[repr] = true;
-    }
-}
-
-struct grammar* take_out_unreachable(struct grammar* source) {
-    
-    struct grammar* new = create_grammar();    
-
-    bool reachable_symbol[MAX_SYMBOLS];
-    memset(reachable_symbol, 0, MAX_SYMBOLS);
-
-    production_bfs(source, (void*(*)(struct grammar*, void*, void*))check_reachable, reachable_symbol);
-
-    return new;
-}
-
-struct grammar* to_right_normal_form(struct grammar* source) {
-
-    struct grammar* new = create_grammar();    
-
-    for (int i = 0; i < source->number_symbols; i++) {
-        add_symbol(new, source->symbols[i].terminal,
-            source->symbols[i].representation
-        );
-    }
-
-    // This will be our 'M' symbol. We choose something not printable.
-    add_symbol(new, false, '\t');
-
-    set_distinguished_symbol(new, '\t');
-
-    for (int i = 0; i < source->number_productions; i++) {
-
-        char right_part[3] = {0, 0, 0};
-
-        right_part[0] = source->productions[i].right_part[0].representation;
-        right_part[1] = source->productions[i].right_part[1].representation;
-
-        add_production(new, source->productions[i].left_part.representation,
-            right_part
-        );
-    }
-
-    return new;
-}
 

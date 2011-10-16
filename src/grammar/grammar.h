@@ -41,5 +41,13 @@ int set_distinguished_symbol(struct grammar* grammar, char symbol);
 
 struct grammar* as_right_normal_form(struct grammar* source);
 
+
+// Auxiliar functions
+bool symbol_is_terminal(struct grammar* grammar, char symbol);
+
+bool symbol_exists(struct grammar* grammar, char symbol);
+
+bool symbol_is_not_terminal(struct grammar* grammar, char symbol);
+
 #endif
 
