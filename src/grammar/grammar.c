@@ -21,7 +21,7 @@ static bool symbol_exists(struct grammar* grammar, char symbol) {
 
     for (int i = 0; i < grammar->number_symbols; i++) {
         if (grammar->symbols[i].representation == symbol) {
-            return false;
+            return true;
         }
     }
     return false;
