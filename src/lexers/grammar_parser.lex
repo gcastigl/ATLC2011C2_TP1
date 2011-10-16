@@ -27,7 +27,7 @@ static int right;
 
 GRAMMARID [0-9a-zA-Z]*
 
-BEGINGRAMMAR G{GRAMMARID}[:blank:]*=[:blank:]*(
+BEGINGRAMMAR G{GRAMMARID}
 
 CHAR [a-zA-Z0-9]
 
@@ -41,14 +41,14 @@ CHAR [a-zA-Z0-9]
 
 ID          [0-9]+
 
-DIGRAPH     digraph[:blank:]*{
+DIGRAPH     digraph[:blank:]*\{
 
 FINALDEF    node\[shape=doublecircle][:blank:]Node
 NODEDEF     node\[shape=circle][:blank:]Node
 
 TRANS_A     Node
 TRANS_B     ->Node
-TRANS_C     [:blank:][label=\"
+TRANS_C     [:blank:]\[label=\"
 
 %x automataParser
 %x scanNodeSymbol
@@ -58,30 +58,38 @@ TRANS_C     [:blank:][label=\"
 
 %%
 
-BEGINGRAMMAR    BEGIN(inGrammar);
+{BEGINGRAMMAR}  {
+                    BEGIN(inGrammar);
+                }
 
-<inGrammar>\{   BEGIN(inNonTerminal);
+<inGrammar>\{   {
+                    BEGIN(inNonTerminal);
+                }
 
 <inNonTerminal>{
-    CHAR    {
+    {CHAR}  {
                 add_symbol(g, false, yytext[0]);
                 used[(int)yytext[0]] = true;
                 terminal[(int)yytext[0]] = false;
             }
-    \}          BEGIN(inTerminal);
+    \}      {
+                BEGIN(inTerminal);
+            }
 }
 
 <inTerminal>{
-    CHAR    {
+    {CHAR}  {
                 add_symbol(g, true, yytext[0]);
                 used[(int)yytext[0]] = true;
                 terminal[(int)yytext[0]] = true;
             }
-    \}          BEGIN(inDistinguished);
+    \},     {
+                BEGIN(inDistinguished);
+            }
 }
 
 <inDistinguished>{
-    CHAR    {
+    {CHAR}  {
                 if (!used[(int)yytext[0]] || terminal[(int)yytext[0]]) {
                     // Error
                 }
@@ -97,7 +105,7 @@ BEGINGRAMMAR    BEGIN(inGrammar);
 }
 
 <inBeginProduction>{
-    CHAR    {
+    {CHAR}  {
                 if (!used[(int)yytext[0]] || terminal[(int)yytext[0]]) {
                     // Error
                 }
@@ -120,7 +128,7 @@ BEGINGRAMMAR    BEGIN(inGrammar);
             }
 }
 <inEndProduction>{
-    CHAR    {
+    {CHAR}  {
                 if (!used[(int)yytext[0]]) {
                     // Error
                 }
@@ -148,37 +156,37 @@ BEGINGRAMMAR    BEGIN(inGrammar);
             }
 }
 
-DIGRAPH             {
+{DIGRAPH}           {
                         BEGIN(automataParser);
                     }
 
 <automataParser>{
-    FINALDEF        {
+    {FINALDEF}      {
                         final = true;
                         BEGIN(scanNodeSymbol);
                     }
 
-    NODEDEF             BEGIN(scanNodeSymbol);
+    {NODEDEF}           BEGIN(scanNodeSymbol);
 
 
-    TRANS_A             BEGIN(scanTransB);
+    {TRANS_A}           BEGIN(scanTransB);
 
 }
 
-<scanNodeSymbol>ID  {
+<scanNodeSymbol>{ID} {
                         b->final_state[b->number_states] = final;
                         final = false;
                         b->states[b->number_states++] = yytext[0];
                         BEGIN(automataParser);
                     }
 
-<scanTransB>ID          b->transitions[b->number_states].from = yytext[0];
+<scanTransB>{ID}        b->transitions[b->number_states].from = yytext[0];
 
-<scanTransB>TRANS_B     BEGIN(scanTransC);
+<scanTransB>{TRANS_B}   BEGIN(scanTransC);
 
-<scanTransC>ID          b->transitions[b->number_transitions].to = yytext[0];
+<scanTransC>{ID}        b->transitions[b->number_transitions].to = yytext[0];
 
-<scanTransC>TRANS_C     BEGIN(scanTransD);
+<scanTransC>{TRANS_C}   BEGIN(scanTransD);
 
 <scanTransD>\\\\    {
                         b->transitions[b->number_transitions++].symbol = '\\';
@@ -189,7 +197,7 @@ DIGRAPH             {
                         }
                     }
 
-<scanTransD>CHAR    {
+<scanTransD>{CHAR}  {
                         b->transitions[b->number_transitions++].symbol =
                             yytext[0];
 
@@ -210,8 +218,21 @@ DIGRAPH             {
                         BEGIN(automataParser);
                     }
 
+.                       // Pass
 
-.           // Pass
+<inGrammar>.            // Pass
+<inNonTerminal>.        // Pass
+<inTerminal>.           // Pass
+<inDistinguished>.      // Pass
+<inBeginProduction>.    // Pass
+<inEndProduction>.      // Pass
+
+
+<automataParser>.       // Pass
+<scanNodeSymbol>.       // Pass
+<scanTransB>.           // Pass
+<scanTransC>.           // Pass
+<scanTransD>.           // Pass
 
 %%
 
