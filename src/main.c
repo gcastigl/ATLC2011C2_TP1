@@ -42,16 +42,16 @@ int main(int argc, char** argv) {
         for (int i = 0; i < g->number_symbols; i++) {
             if (g->symbols[i].terminal) {
                 if (i != 0) printf(", ");
-                prinftf("%c", g->symbols[i].representation);
+                printf("%c", g->symbols[i].representation);
             }
         }
         
         // 2) Símbolos no terminales
-        prinft("\n\nNon-terminal symbols:\n\t");
+        printf("\n\nNon-terminal symbols:\n\t");
         for (int i = 0; i < g->number_symbols; i++) {
             if (!g->symbols[i].terminal) {
                 if (i != 0) printf(", ");
-                prinftf("%c", g->symbols[i].representation);
+                printf("%c", g->symbols[i].representation);
             }
         }
 
