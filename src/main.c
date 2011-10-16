@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "grammar/grammar.h"
+#include "logic/grammar.h"
 #include "lexers/lexers.h"
 #include "output/output.h"
 
@@ -28,10 +28,36 @@ int main(int argc, char** argv) {
         a = parse_automata_file(argv[1]);
 
         // 1. Símbolos terminales.
+        printf("Terminal symbols: \n\t");
+        for (int i = 0; i < a->number_chars; i++) {
+            if (i != 0) printf(", ");
+            printf("%c", a->chars[i]);
+        }
+
         // 2. Estados.
+        printf("\n\nStates: \n\t{");
+        for (int i = 0; i < a->number_states; i++) {
+            if (i != 0) printf(", ");
+            printf("q%c", a->states[i]);
+        }
+
         // 3. Estado inicial.
+        printf("\n\nInitial state: q%c\n", a->states[0]);
+
         // 4. Conjunto de estados finales.
+        printf("\nFinal states = {");
+        bool first = true;
+        for (int i = 0; i < a->number_states; i++) {
+            if (a->final_state[i]) {
+                if (!first) printf(", ");
+                printf("q%c", a->states[i]);
+            }
+        }
+
         // 5. Tabla de la función de transición.
+        // TODO
+        print_ascii_table_for_automata(a);
+
         // 6. La especificación completa de la gramática equivalente.
 
         g = automata_to_grammar(a);
@@ -105,5 +131,10 @@ int main(int argc, char** argv) {
     }
 
     return 0;
+}
+
+
+void print_ascii_table_for_automata(struct automata* a) {
+    return;
 }
 
