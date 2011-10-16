@@ -81,19 +81,23 @@ int main(int argc, char** argv) {
 
         g = parse_grammar_file(argv[1]);
         // 1) Símbolos terminales
+        bool first = true;
         printf("Terminal symbols:\n\t");
         for (int i = 0; i < g->number_symbols; i++) {
             if (g->symbols[i].terminal) {
-                if (i != 0) printf(", ");
+                if (!first) printf(", ");
+                first = false;
                 printf("%c", g->symbols[i].representation);
             }
         }
         
         // 2) Símbolos no terminales
+        first = true;
         printf("\n\nNon-terminal symbols:\n\t");
         for (int i = 0; i < g->number_symbols; i++) {
             if (!g->symbols[i].terminal) {
-                if (i != 0) printf(", ");
+                if (!first) printf(", ");
+                first = false;
                 printf("%c", g->symbols[i].representation);
             }
         }
