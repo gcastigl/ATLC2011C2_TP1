@@ -15,15 +15,17 @@ int main(int argc, char** argv) {
     add_terminal(grammar, 'b');
     add_terminal(grammar, 'c');
     set_distinguished_symbol(grammar, 'A');
-    add_production(grammar, 'A', "aB\0");
-    add_production(grammar, 'B', "aA\0");
-    add_production(grammar, 'A', "c\0");
-    add_production(grammar, 'B', "b\0"); 
+    add_production(grammar, 'A', "aB");
+    add_production(grammar, 'B', "aA");
+    add_production(grammar, 'A', "c");
+    add_production(grammar, 'B', "b"); 
 
     FILE* stream = fopen( "./TEST", "w");
-    grammar_output(stream, grammar);
+    automata_output(stream, grammar);
     fclose(stream);
 
     destroy_grammar(grammar);
+
+    return 0;
 }
 

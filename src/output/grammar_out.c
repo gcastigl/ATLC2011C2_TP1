@@ -35,7 +35,7 @@ void grammar_output(FILE* outfile, struct grammar* grammar) {
 
     for (int i = 0; i < grammar->number_symbols; i++) {
 
-        if (grammar->symbols[i].terminal) {
+        if (!grammar->symbols[i].terminal) {
 
             bool first_production = true;
 
@@ -74,6 +74,6 @@ void grammar_output(FILE* outfile, struct grammar* grammar) {
             }
         }
     }
-    fprintf(outfile, "}\n)\n");
+    fprintf(outfile, "\n}\n)\n");
 }
 

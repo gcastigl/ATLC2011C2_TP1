@@ -20,4 +20,5 @@ gcc -I$INCLUDE -oparser *.c -lfl
 gcc -I$INCLUDE -c ../src/grammar/grammar.c ../src/main.c ../src/output/grammar_out.c ../src/output/automata_out.c $FLAGS
 
 # Link all together
-# TODO
+ld -lc -lfl *.o -o ../run
+
