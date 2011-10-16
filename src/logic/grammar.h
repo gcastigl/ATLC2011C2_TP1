@@ -57,6 +57,7 @@ int set_distinguished_symbol(struct grammar* grammar, char symbol);
 
 struct grammar* as_right_normal_form(struct grammar* source);
 
+struct grammar* automata_to_grammar(struct automata* a);
 
 // Auxiliar functions
 bool symbol_is_terminal(struct grammar* grammar, char symbol);

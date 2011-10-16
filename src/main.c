@@ -21,16 +21,31 @@ int main(int argc, char** argv) {
     char* gc = ".gc";
 
     struct grammar* g;
+    struct automata* a;
 
     if (strcmp(dot, argv[1]+len-4) == 0) {
         
-        g = parse_automata_file(argv[1]);
+        a = parse_automata_file(argv[1]);
+
         // 1. Símbolos terminales.
         // 2. Estados.
         // 3. Estado inicial.
         // 4. Conjunto de estados finales.
         // 5. Tabla de la función de transición.
         // 6. La especificación completa de la gramática equivalente.
+
+        g = automata_to_grammar(a);
+
+        char filename[255];
+        memset(filename, 0, 255);
+        strcpy(filename, argv[1]);
+        strcpy(filename+len-3, "gr\0");
+        filename[len-1] = '\0';
+        FILE* file = fopen(argv[1], "w");
+        grammar_output(file, g);
+
+        destroy_grammar(g);
+        free(a);
     }
 
     else if (strcmp(gc, argv[1]+len-3) == 0) {

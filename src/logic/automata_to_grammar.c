@@ -1,3 +1,8 @@
+#include "grammar/grammar.h"
+
+#include <stdlib.h>
+#include <string.h>
+
 struct grammar* automata_to_grammar(struct automata* a) {
 
     g = create_grammar();
