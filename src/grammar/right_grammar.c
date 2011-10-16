@@ -153,7 +153,7 @@ static struct grammar* take_out_unreachable(struct grammar* source) {
         reachable_symbol
     );
 
-    reachable_symbol[source->distinguished_symbol] = true;
+    reachable_symbol[(int)source->distinguished_symbol] = true;
     for (int i = 0; i < source->number_symbols; i++) {
         if (source->symbols[i].terminal == true) {
             reachable_symbol[(int)source->symbols[i].representation] = true;
