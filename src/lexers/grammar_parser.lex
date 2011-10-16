@@ -3,16 +3,17 @@
 #include <ctype.h>
 #include "grammar/grammar.h"
 %}
-%START	NT, T, ST, PROD, PRODBEG, END
+%START	BEG,NT, T, ST, PROD, PRODBEG, END
 %%
 %{
 	BEGIN NT;
 	int i;
 	int nt_used[30] = {0};
 	int t_used[30] = {0};
-	int curr;
-	int start;
+	char curr;
 %}
+
+<BEG>G[a-ZA-Z0-9]*[\ \n\t]*\(	{ BEGIN NT;}
 
 <NT>\{( *[A-Z] *,)*\ *[A-Z]\ *\},	{
 									for( i = 0; i < yylength ; i ++ ) {
@@ -67,7 +68,14 @@
 			//proxima produccion
 		}
 
+	}
 }
+
+<PRODBEG>\}	{BEGIN END;}
+<END>\(	{//todo ok}
+	;
+}
+
 
 
 
