@@ -4,7 +4,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "grammar/grammar.h"
+#include "logic/grammar.h"
 
 /* Automata parser */
 
