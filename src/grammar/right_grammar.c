@@ -145,7 +145,7 @@ static bool has_unitary_productions(struct grammar* source) {
     for (int i = 0; i < source->number_productions; i++) {
 
         if (source->productions[i].right_part[0].terminal == false &&
-            source->productions[i].right_part[1].symbol != true
+            source->productions[i].right_part[1].symbol == '\0'
         ){
             return true;
         }
@@ -153,20 +153,67 @@ static bool has_unitary_productions(struct grammar* source) {
     return false;
 }
 
+static void copy_symbols(struct grammar* source, struct grammar* dest) {
+
+    for (int i = 0; i < source->number_symbols; i++) {
+        add_symbol(dest, source->symbols[i].terminal,
+            source->symbols[i].representation
+        );
+    }
+
+}
+
 static struct grammar* take_out_unitary_productions(struct grammar* source) {
 
+    struct grammar* new = create_grammar();
 
+    copy_symbols(source, new);
+
+    bool not_replaced = true;
+
+    for (int i = 0; i < source->number_productions; i++) {
+        
+        char new_rightpart[3] = {0, 0, 0};
+
+        if (not_replaced &&
+            source->productions[i].right_part[0].terminal == false &&
+            source->productions[i].right_part[1].symbol == '\0'
+        ){
+            for (int j = 0; j < source->number_productions; j++) {
+
+                if (source->productions[j].left_part.symbol ==
+                    source->productions[i].right_part[0].symbol
+                ){
+                    new_rightpart[0] =
+                        source->productions[j].right_part[0].symbol;
+                    new_rightpart[1] =
+                        source->productions[j].right_part[1].symbol;
+                    add_production(new,
+                        source->productions[i].left_part.symbol,
+                        new_rightpart
+                    );
+                }
+            }
+            not_replaced = false;
+
+        } else {
+            
+            new_rightpart[0] = source->productions[i].right_part[0].symbol;
+            new_rightpart[1] = source->productions[i].right_part[1].symbol;
+            add_production(new, source->productions[i].left_part.symbol,
+                new_rightpart
+            );
+        }
+    }
+
+    return new;
 }
 
 static struct grammar* reverse_productions(struct grammar* source) {
 
     struct grammar* new = create_grammar();
 
-    for (int i = 0; i < source->number_symbols; i++) {
-        add_symbol(new, source->symbols[i].terminal,
-            source->symbols[i].representation
-        );
-    }
+    copy_symbols(source, new);
 
     set_distinguished_symbol(new, '\t');
 
