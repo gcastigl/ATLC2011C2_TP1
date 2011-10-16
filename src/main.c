@@ -121,10 +121,15 @@ int main(int argc, char** argv) {
         strcpy(filename, argv[1]);
         strcpy(filename+len-2, "png");
         FILE* file = fopen(filename, "w");
-        struct grammar* right = as_right_normal_form(g); 
-        automata_output(file, right);
-
-        destroy_grammar(right);
+        if (g->alignment != RIGHT_ALIGNED) {
+            struct grammar* right = as_right_normal_form(g); 
+            automata_output(file, right);
+        
+            destroy_grammar(right);
+        } else {
+            automata_output(file, g);
+        }
+        
         destroy_grammar(g);
     }
 
