@@ -1,6 +1,8 @@
 #! /bin/sh
 
 # Cleanup
+rm TEST
+rm run
 rm -rf bin
 mkdir bin
 cd ./bin

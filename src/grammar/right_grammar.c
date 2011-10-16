@@ -153,6 +153,12 @@ static struct grammar* take_out_unreachable(struct grammar* source) {
         reachable_symbol
     );
 
+    for (int i = 0; i < source->number_symbols; i++) {
+        if (source->symbols[i].terminal == true) {
+            reachable_symbol[(int)source->symbols[i].representation] = true;
+        }
+    }
+
     // Copy all reachable symbols
     copy_symbols_under_mask(source, new, reachable_symbol);
 
@@ -172,7 +178,9 @@ static struct grammar* take_out_unreachable(struct grammar* source) {
             for (int s = 0; s <= 1; s++) {
                 right_part[s] = prod->right_part[s].representation;
 
-                if (!reachable_symbol[(int)right_part[s]]) {
+                if (right_part[s] != '\0' &&
+                    !reachable_symbol[(int)right_part[s]])
+                {
                     selectable = false;
                 }
             }
@@ -396,6 +404,8 @@ static struct grammar* take_out_unproductive_production(struct grammar* source)
             char_map[(int)source->symbols[i].representation] = true;
         }
     }
+
+    set_distinguished_symbol(new, source->distinguished_symbol);
 
     copy_symbols_under_mask(source, new, char_map);
 

@@ -87,24 +87,28 @@ int add_production(struct grammar* grammar, char left_part, char* right_part) {
                 return -1;
             }
             if (symbol_is_terminal(grammar, right_part[0]) &&
+                right_part[1] &&
                 symbol_is_not_terminal(grammar, right_part[1]))
             {
                 grammar->alignment =  RIGHT_ALIGNED;
             } else if (symbol_is_not_terminal(grammar, right_part[0]) &&
+                       right_part[1] &&
                        symbol_is_terminal(grammar, right_part[1]))
             {
                 grammar->alignment = LEFT_ALIGNED;
-            } else {
+            } else if (right_part[1]) {
                 return -1;
             }
         } else if (grammar->alignment == RIGHT_ALIGNED) {
             if (!(symbol_is_terminal(grammar, right_part[0]) &&
+                  right_part[1] &&
                   symbol_is_not_terminal(grammar, right_part[1]))
             ){
                 return -1;
             }
-        } else {
+        } else if (grammar->alignment == LEFT_ALIGNED) {
             if (!(symbol_is_not_terminal(grammar, right_part[0]) &&
+                  right_part[1] &&
                   symbol_is_terminal(grammar, right_part[1]))
             ){
                 return -1;
