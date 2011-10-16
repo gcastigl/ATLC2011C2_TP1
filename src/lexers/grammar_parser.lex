@@ -20,6 +20,7 @@
 										if( 'A' <= curr && curr <= 'Z') {
 											if( nt_used[curr - 'A'] == 0) {
 												nt_used[curr - 'A'] = 1;
+												add_terminal_symbol(g,curr);
 											}
 											else{
 												//error
@@ -34,6 +35,7 @@
 										if( 'a' <= curr && curr <= 'z') {
 											if( t_used[curr - 'a'] == 0) {
 												t_used[curr - 'a'] = 1;
+												add_non_terminal_symbol(g,curr);
 											}
 											else{
 												//error
@@ -45,7 +47,7 @@
 <ST>[A-Z]\ *,	{
 					curr = yytext[0];
 					if(nt_used[curr-'A']){
-						start = yytext[0];
+						set_distinguished(g, curr);
 					}
 					else{
 						//error
@@ -57,13 +59,6 @@
 			}
 
 <PRODBEG>[A-Z]\ *->( *([a-z][A-Z]?|[A-Z][a-z]|\\) *\|)*\ *([a-z][A-Z]?|[A-Z][a-z]|\\)\ *,	{
-	BEGIN NT;
-	int i;
-	int nt_used[30] = {0};
-	int t_used[30] = {0};
-	int curr;
-	int start;
-%}
 
 	int prodl = yytext[0];
 	for( i = 1 ; i < yylength ; i ++ ) {
@@ -72,7 +67,7 @@
 			//proxima produccion
 		}
 
-
+}
 
 
 
