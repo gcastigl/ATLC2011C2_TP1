@@ -8,11 +8,7 @@
 
 /* Automata parser */
 
-static struct transition  transitions[MAX_PRODUCTIONS];
-static int                trans_count = 0;
-static int                symbols_numbers[MAX_SYMBOLS];
-static int                non_terminal_count = 0;
-static bool               symbol_is_final[MAX_SYMBOLS] = {0};
+static struct automata    *b;
 static bool               final = false;
 
 /* Grammar parser */
@@ -170,33 +166,44 @@ DIGRAPH             {
 }
 
 <scanNodeSymbol>ID  {
-                        symbol_is_final[non_terminal_count] = final;
+                        b->state_is_final[state_count] = final;
                         final = false;
-                        symbols_numbers[non_terminal_count++] = atoi(yytext);
+                        b->states[state_count++] = yytext[0];
                         BEGIN(automataParser);
                     }
 
-<scanTransB>ID          transitions[trans_count].from = atoi(yytext);
+<scanTransB>ID          b->transitions[b->number_transitions].from = yytext[0];
 
 <scanTransB>TRANS_B     BEGIN(scanTransC);
 
-<scanTransC>ID          transitions[trans_count].to = atoi(yytext);
+<scanTransC>ID          b->transitions[b->number_transitions].to = yytext[0];
 
 <scanTransC>TRANS_C     BEGIN(scanTransD);
 
 <scanTransD>\\\\    {
-                        transitions[trans_count++].symbol = '\\';
+                        b->transitions[b->number_transitions++].symbol = '\\';
+
+                        if (!used['\\']) {
+                            used['\\'] = true;
+                            b->chars[b->number_chars++] = '\\';
+                        }
                     }
 
 <scanTransD>CHAR    {
-                        transitions[trans_count++].symbol = yytext[0];
+                        b->transitions[b->number_transitions++].symbol =
+                            yytext[0];
+
+                        if (!used[yytext[0]]) {
+                            used[yytext[0]] = true;
+                            b->chars[b->number_chars++] = yytext[0];
+                        }
                     }
 
 <scanTransD>/       {
-                        transitions[trans_count].from =
-                            transitions[trans_count-1].from;
-                        transitions[trans_count].to =
-                            transitions[trans_count-1].to;
+                        b->transitions[b->number_transitions].from =
+                            b->transitions[b->number_transitions-1].from;
+                        b->transitions[b->number_transitions].to =
+                            b->transitions[b->number_transitions-1].to;
                     }
 
 <scanTransD>\"      {
@@ -222,54 +229,13 @@ struct grammar* parse_grammar_file(char* filename) {
     return g;
 }
 
-struct grammar* parse_automata_file(char* filename, struct automata **a) {
+struct automata* parse_automata_file(char* filename) {
+
+    struct automata *b = (struct automata*)malloc(sizeof(struct automata));
 
     yyin = fopen(filename, "r");
     yylex();
 
-    g = create_grammar();
-
-    *a = (struct automata*)malloc(sizeof(struct automata));
-    memset(*a, 0, sizeof(struct automata));
-    struct automata *b = *a;
-
-    bool used[255];
-    memset(used, 0, 255);
-
-    for (int i = 0; i < trans_count; i++) {
-        add_symbol(g, true, transitions[i].symbol);
-        used[(int)transitions[i].symbol] = true;
-    }
-
-    int preffered = 'A';
-    for (int i = 0; i < non_terminal_count; i++) {
-        
-        while(preffered < 255 && used[preffered++]);
-
-        add_symbol(g, false, preffered);
-        b->states[b->number_states++] = preffered;
-
-        symbols_numbers[i] = preffered;
-        used[preffered] = true;
-
-        if (symbol_is_final[i]) {
-            char lambda_production[2] = { '\\', '\0' };
-            add_production(g, (char)preffered, lambda_production);
-        }
-    }
-
-    set_distinguished_symbol(g, (char)symbols_numbers[0]);
-
-    for (int i = 0; i < trans_count; i++) {
-        
-        char prod[2] = { 
-            transitions[i].symbol,
-            symbols_numbers[transitions[i].to]
-        };
-
-        add_production(g, (char)symbols_numbers[transitions[i].from], prod);
-    }
-
-    return g;
+    return b;
 }
 
