@@ -16,9 +16,6 @@ flex -o automata_parser.c ../src/lexers/automata_parser.lex
 flex -o grammar_parser.c ../src/lexers/grammar_parser.lex
 gcc -I$INCLUDE -oparser *.c -lfl
 
-# Compile other C sources
-gcc -I$INCLUDE -c ../src/grammar/grammar.c ../src/main.c ../src/output/grammar_out.c ../src/output/automata_out.c $FLAGS
-
-# Link all together
-ld -lc -lfl *.o -o ../run
+# Compile and link with other C sources
+gcc -I$INCLUDE ../src/grammar/right_grammar.c ../src/grammar/grammar.c ../src/main.c ../src/output/grammar_out.c ../src/output/automata_out.c $FLAGS -lfl -o ../run
 

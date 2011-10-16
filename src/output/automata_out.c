@@ -13,7 +13,7 @@ void automata_output(FILE* outfile, struct grammar* grammar) {
 
     int nonterminal_count = 0;
 
-    integer_map[grammar->distinguished_symbol] = nonterminal_count;
+    integer_map[(int)grammar->distinguished_symbol] = nonterminal_count;
     char_map[nonterminal_count++] = grammar->distinguished_symbol;
 
     for (int i = 0; i < grammar->number_symbols; i++) {
@@ -21,7 +21,7 @@ void automata_output(FILE* outfile, struct grammar* grammar) {
         if (grammar->symbols[i].terminal == false &&
             grammar->symbols[i].representation != grammar->distinguished_symbol
         ) {
-            integer_map[grammar->symbols[i].representation] = nonterminal_count;
+            integer_map[(int)grammar->symbols[i].representation] = nonterminal_count;
             char_map[nonterminal_count++] = grammar->symbols[i].representation;
         }
     }

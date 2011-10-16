@@ -3,6 +3,58 @@
 #include "grammar/grammar.h"
 
 /**
+ * Auxiliary function that copies all the symbols from one grammar to the other.
+ *
+ * @param source the original grammar
+ * @param dest   the new grammar
+ */
+static void copy_symbols(struct grammar* source, struct grammar* dest) {
+
+    for (int i = 0; i < source->number_symbols; i++) {
+        add_symbol(dest, source->symbols[i].terminal,
+            source->symbols[i].representation
+        );
+    }
+
+}
+
+/**
+ * Auxiliary function that copies symbols from one grammar to the other, given 
+ * that mask[(int)symbol_representation] is true.
+ *
+ * @param source the source grammar
+ * @param dest   the grammar to put symbols in
+ * @param mask   which symbols should be copied
+ */
+static void copy_symbols_under_mask(struct grammar* source,
+                                    struct grammar* dest, bool* mask)
+{
+    for (int i = 0; i < source->number_symbols; i++) {
+        
+        if (mask[(int)source->symbols[i].representation]) {
+
+            add_symbol(dest, source->symbols[i].terminal,
+                source->symbols[i].representation);
+        }
+    }
+}
+
+/**
+ * Copies a given production into another grammar.
+ * 
+ * @param grammar    a grammar to put the new production into
+ * @param production a production to copy into the grammar
+ */
+static void add_production_copy(struct grammar* grammar,
+                                struct production* production)
+{
+    char prod[3] = {0, 0, 0};
+    prod[0] = production->right_part[0].representation;
+    prod[1] = production->right_part[1].representation;
+    add_production(grammar, production->left_part.representation, prod);
+}
+
+/**
  * Iterates over the symbols of a grammar, traversing them as they appear in 
  * order of the productions. Only productive productions are traversed.
  *
@@ -63,7 +115,8 @@ static void production_bfs(struct grammar* grammar,
 
 /**
  * This is an auxiliary function to be called when the function
- * take_out_unreachable does a BFS traversal.
+ * take_out_unreachable does a BFS traversal to see what symbols are worth
+ * keeping.
  *
  * It marks terminal and non-terminal symbols as 'reachables' in a auxiliary
  * array that is passed as a parameter to the bfs, and is a output paramater
@@ -88,7 +141,7 @@ static void check_reachable(struct grammar* grammar,
  *
  * @param source the original grammar
  */
-struct grammar* take_out_unreachable(struct grammar* source) {
+static struct grammar* take_out_unreachable(struct grammar* source) {
     
     struct grammar* new = create_grammar();    
 
@@ -101,13 +154,7 @@ struct grammar* take_out_unreachable(struct grammar* source) {
     );
 
     // Copy all reachable symbols
-    for (int i = 0; i < source->number_symbols; i++) {
-        struct symbol* symbol = &(source->symbols[i]);
-
-        if (reachable_symbol[(int)symbol->representation]) {
-            add_symbol(new, false, symbol->representation);
-        }
-    }
+    copy_symbols_under_mask(source, new, reachable_symbol);
 
     // Setup distinguished symbol
     set_distinguished_symbol(new, source->distinguished_symbol);
@@ -149,15 +196,10 @@ struct grammar* take_out_unreachable(struct grammar* source) {
  * @return       a new grammar with no productions of the form A->λ unless
  *               A is the distinguished symbol
  */
-struct grammar* replace_lambda_with_M(struct grammar* source) {
+static struct grammar* replace_lambda_with_M(struct grammar* source) {
 
     struct grammar* new = create_grammar();
-
-    for (int i = 0; i < source->number_symbols; i++) {
-        add_symbol(new, source->symbols[i].terminal,
-            source->symbols[i].representation
-        );
-    }
+    copy_symbols(source, new);
 
     // This will be our 'M' symbol. We choose something not printable.
     add_symbol(new, false, '\t');
@@ -203,22 +245,6 @@ static bool has_unitary_productions(struct grammar* source) {
 }
 
 /**
- * Auxiliary function that all the symbols from one grammar to the other.
- *
- * @param source the original grammar
- * @param dest   the new grammar
- */
-static void copy_symbols(struct grammar* source, struct grammar* dest) {
-
-    for (int i = 0; i < source->number_symbols; i++) {
-        add_symbol(dest, source->symbols[i].terminal,
-            source->symbols[i].representation
-        );
-    }
-
-}
-
-/**
  * Creates a new grammar with one less unitary production.
  *
  * @param source the original grammar
@@ -234,7 +260,6 @@ static struct grammar* take_out_unitary_productions(struct grammar* source) {
 
     for (int i = 0; i < source->number_productions; i++) {
         
-        char new_rightpart[3] = {0, 0, 0};
 
         if (not_replaced &&
             source->productions[i].right_part[0].terminal == false &&
@@ -245,6 +270,8 @@ static struct grammar* take_out_unitary_productions(struct grammar* source) {
                 if (source->productions[j].left_part.representation ==
                     source->productions[i].right_part[0].representation
                 ){
+                    char new_rightpart[3] = {0, 0, 0};
+
                     new_rightpart[0] =
                         source->productions[j].right_part[0].representation;
                     new_rightpart[1] =
@@ -259,13 +286,7 @@ static struct grammar* take_out_unitary_productions(struct grammar* source) {
 
         } else {
             
-            new_rightpart[0] =
-                source->productions[i].right_part[0].representation;
-            new_rightpart[1] =
-                source->productions[i].right_part[1].representation;
-            add_production(new, source->productions[i].left_part.representation,
-                new_rightpart
-            );
+            add_production_copy(new, &(source->productions[i]));
         }
     }
 
@@ -304,7 +325,86 @@ static struct grammar* reverse_productions(struct grammar* source) {
             new_production[2] = temp; 
         }
 
-        add_production(new, new_production[0], new_production+1);
+        if (new_production[0] != source->distinguished_symbol) {
+            add_production(new, new_production[0], new_production+1);
+        }
+    }
+
+    return new;
+}
+
+/**
+ * Checks whether the grammar has unproductive productions.
+ *
+ * @param grammar the grammar to work with
+ * @return        true if the grammar has unproductive productions
+ */
+static bool has_unproductive_productions(struct grammar* grammar) {
+
+    for (int i = 0; i < grammar->number_symbols; i++) {
+
+        if (grammar->symbols[i].terminal == false) {
+
+            bool unproductive = true;
+            for (int j = 0; j < grammar->number_productions; j++) {
+            
+                if (grammar->productions[j].left_part.representation ==
+                    grammar->symbols[i].representation
+                ){
+                    unproductive = false;
+                }
+            }
+
+            if (unproductive) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+/**
+ * Delete unproductive productions from grammar. A unproductive production is
+ * one of the form A->B where B doesn't lead to anything.
+ *
+ * @param source the grammar to work with
+ * @return       a new grammar with less (not warranty of all deleted)
+ *               unproductive productions
+ */
+static struct grammar* take_out_unproductive_production(struct grammar* source)
+{
+    struct grammar* new = create_grammar();
+
+    bool char_map[255];
+    memset(char_map, 0, 255);
+
+    for (int i = 0; i < source->number_symbols; i++) {
+        
+        if (!source->symbols[i].terminal) {
+            
+            for (int j = 0; j < source->number_productions; j++) {
+                
+                if (source->productions[j].left_part.representation ==
+                    source->symbols[i].representation
+                ){
+
+                    char_map[(int)source->symbols[i].representation] = true;
+                }
+            }
+        } else {
+
+            char_map[(int)source->symbols[i].representation] = true;
+        }
+    }
+
+    copy_symbols_under_mask(source, new, char_map);
+
+    for (int i = 0; i < source->number_productions; i++) {
+
+        if (char_map[(int)source->productions[i].left_part.representation]) {
+
+            add_production_copy(new, &(source->productions[i]));
+        }
     }
 
     return new;
@@ -325,40 +425,39 @@ static struct grammar* reverse_productions(struct grammar* source) {
  * @param source the grammar to work with
  * @return       a grammar in the right normal form
  */
-struct grammar* to_right_normal_form(struct grammar* source) {
+struct grammar* as_right_normal_form(struct grammar* source) {
 
     source = take_out_unreachable(source);    
 
-    struct grammar* new = replace_lambda_with_M(source);
-    
-    while(has_unitary_productions(new)) {
-
-        struct grammar* replace = take_out_unitary_productions(new);
-
-        destroy_grammar(new);
-
-        new = replace;
+    while (has_unitary_productions(source)) {
+        struct grammar* replace = take_out_unitary_productions(source);
+        destroy_grammar(source);
+        source = replace;
     }
 
+    while (has_unproductive_productions(source)) {
+        struct grammar* replace = take_out_unproductive_production(source);
+        destroy_grammar(source);
+        source = replace;
+    }
+
+    struct grammar* new = replace_lambda_with_M(source);
     struct grammar* reverse = reverse_productions(new);
-
     destroy_grammar(new);
-
     new = take_out_unreachable(reverse);
     
-    while(has_unitary_productions(new)) {
-
+    while (has_unitary_productions(new)) {
         struct grammar* replace = take_out_unitary_productions(new);
-
         destroy_grammar(new);
-
         new = replace;
     }
 
-    struct grammar* ret = take_out_unreachable(new);
+    while (has_unproductive_productions(new)) {
+        struct grammar* replace = take_out_unproductive_production(new);
+        destroy_grammar(new);
+        new = replace;
+    }
 
-    destroy_grammar(new);
-
-    return ret;
+    return new;
 }
 
