@@ -6,6 +6,8 @@
 #include "lexers/lexers.h"
 #include "output/output.h"
 
+static void print_ascii_table_for_automata(struct automata* a);
+
 static void usage(char* filename) {
     printf("Usage: \n %s [file]\n\n", filename);
     exit(1);
@@ -13,7 +15,7 @@ static void usage(char* filename) {
 
 int main(int argc, char** argv) {
 
-    if (argc < 2) {
+    if (argc < 1) {
         usage(argv[0]);
     }
 
