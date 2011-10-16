@@ -1,7 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
-#include "grammar/grammar.h"
+#include "logic/grammar.h"
 #include "lexers/lexers.h"
 #include "output/output.h"
 

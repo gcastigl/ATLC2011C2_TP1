@@ -1,6 +1,6 @@
 #include <string.h>
 
-#include "grammar/grammar.h"
+#include "logic/grammar.h"
 
 /**
  * Auxiliary function that copies all the symbols from one grammar to the other.

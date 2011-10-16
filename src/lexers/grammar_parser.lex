@@ -4,7 +4,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "grammar/grammar.h"
+#include "logic/grammar.h"
 
 /* Automata parser */
 
@@ -166,13 +166,13 @@ DIGRAPH             {
 }
 
 <scanNodeSymbol>ID  {
-                        b->state_is_final[state_count] = final;
+                        b->final_state[b->number_states] = final;
                         final = false;
-                        b->states[state_count++] = yytext[0];
+                        b->states[b->number_states++] = yytext[0];
                         BEGIN(automataParser);
                     }
 
-<scanTransB>ID          b->transitions[b->number_transitions].from = yytext[0];
+<scanTransB>ID          b->transitions[b->number_states].from = yytext[0];
 
 <scanTransB>TRANS_B     BEGIN(scanTransC);
 
@@ -193,13 +193,13 @@ DIGRAPH             {
                         b->transitions[b->number_transitions++].symbol =
                             yytext[0];
 
-                        if (!used[yytext[0]]) {
-                            used[yytext[0]] = true;
+                        if (!used[(int)yytext[0]]) {
+                            used[(int)yytext[0]] = true;
                             b->chars[b->number_chars++] = yytext[0];
                         }
                     }
 
-<scanTransD>/       {
+<scanTransD>\/       {
                         b->transitions[b->number_transitions].from =
                             b->transitions[b->number_transitions-1].from;
                         b->transitions[b->number_transitions].to =

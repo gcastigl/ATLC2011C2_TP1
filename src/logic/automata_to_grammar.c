@@ -1,20 +1,20 @@
-#include "grammar/grammar.h"
+#include "logic/grammar.h"
 
 #include <stdlib.h>
 #include <string.h>
 
-struct grammar* automata_to_grammar(struct automata* a) {
+struct grammar* automata_to_grammar(struct automata* b) {
 
-    g = create_grammar();
+    struct grammar* g = create_grammar();
 
     bool used[255];
     memset(used, 0, 255);
 
     char number_to_symbol[255];
 
-    for (int i = 0; i < a->number_transitions; i++) {
-        add_symbol(g, true, a->transitions[i].symbol);
-        used[(int)a->transitions[i].symbol] = true;
+    for (int i = 0; i < b->number_transitions; i++) {
+        add_symbol(g, true, b->transitions[i].symbol);
+        used[(int)b->transitions[i].symbol] = true;
     }
 
     int preffered = 'A';
@@ -30,13 +30,13 @@ struct grammar* automata_to_grammar(struct automata* a) {
         number_to_symbol[i] = preffered;
         used[preffered] = true;
 
-        if (symbol_is_final[i]) {
+        if (b->final_state[i]) {
             char lambda_production[2] = { '\\', '\0' };
             add_production(g, (char)preffered, lambda_production);
         }
     }
 
-    set_distinguished_symbol(g, (char)symbols_numbers[0]);
+    set_distinguished_symbol(g, (char)number_to_symbol[0]);
 
     for (int i = 0; i < b->number_transitions; i++) {
         
@@ -45,7 +45,7 @@ struct grammar* automata_to_grammar(struct automata* a) {
             number_to_symbol[b->transitions[i].to]
         };
 
-        add_production(g, number_to_symbol[transitions[i].from], prod);
+        add_production(g, number_to_symbol[b->transitions[i].from], prod);
     }
 
     return g;

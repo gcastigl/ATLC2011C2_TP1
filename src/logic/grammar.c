@@ -1,4 +1,4 @@
-#include "grammar/grammar.h"
+#include "logic/grammar.h"
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>

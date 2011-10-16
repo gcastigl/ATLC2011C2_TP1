@@ -17,6 +17,6 @@ touch grammar_parser.c
 flex -o grammar_parser.c ../src/lexers/grammar_parser.lex
 
 # Compile and link with other C sources
-gcc $FLAGS -I$INCLUDE *.c ../src/grammar/right_grammar.c ../src/grammar/grammar.c ../src/main.c ../src/output/grammar_out.c ../src/output/automata_out.c -lfl -o ../run
+gcc $FLAGS -I$INCLUDE *.c ../src/logic/right_grammar.c ../src/logic/grammar.c ../src/main.c ../src/output/grammar_out.c ../src/output/automata_out.c ../src/logic/automata_to_grammar.c -lfl -o ../run
 
 
