@@ -2,89 +2,131 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "grammar/grammar.h"
+
+static bool used[255];
+static bool terminal[255];
+
+static char curr;
+static struct grammar* g;
+static bool distinguished;
+
+static char left_part;
+static char right_part[3];
+static int right;
+
 %}
-%START    BEG, NT, T, ST, PROD, PRODBEG, END
+
+GRAMMARID [0-9a-zA-Z]*
+
+BEGINGRAMMAR G{GRAMMARID}[:blank:]*=[:blank:]*(
+
+CHAR [a-zA-Z]
+
+%x inGrammar
+%x inNonTerminal
+%x inTerminal
+%x inDistinguished
+%x inBeginProduction
+%x inEndProduction
+
 %%
-%{
-    BEGIN NT;
-    int i;
-    int nt_used[30] = {0};
-    int t_used[30] = {0};
-    char curr;
-%}
 
-<BEG>G[a-ZA-Z0-9]*[\ \n\t]*\(    { BEGIN NT;}
+BEGINGRAMMAR    BEGIN(inGrammar);
 
-<NT>\{( *[A-Z] *,)*\ *[A-Z]\ *\},    {
-                                    for( i = 0; i < yylength ; i ++ ) {
-                                        curr = yytext[i];
-                                        if( 'A' <= curr && curr <= 'Z') {
-                                            if( nt_used[curr - 'A'] == 0) {
-                                                nt_used[curr - 'A'] = 1;
-                                                add_terminal_symbol(g,curr);
-                                            }
-                                            else{
-                                                //error
-                                            }
-                                        }
-                                    }
-                                    BEGIN T;
-                                }
-<T>\{( *[a-z] *,)*\ *[a-z]\ *\},    {
-                                    for( i = 0; i < yylength ; i ++ ) {
-                                        curr = yytext[i];
-                                        if( 'a' <= curr && curr <= 'z') {
-                                            if( t_used[curr - 'a'] == 0) {
-                                                t_used[curr - 'a'] = 1;
-                                                add_non_terminal_symbol(g,curr);
-                                            }
-                                            else{
-                                                //error
-                                            }
-                                        }
-                                    }
-                                    BEGIN ST;
-                                }
-<ST>[A-Z]\ *,    {
-                    curr = yytext[0];
-                    if(nt_used[curr-'A']){
-                        set_distinguished(g, curr);
-                    }
-                    else{
-                        //error
-                    }
-                    BEGIN PROD;
+<inGrammar>\{   BEGIN(inNonTerminal);
+
+<inNonTerminal>{
+    CHAR    {
+                add_symbol(g, false, yytext[0]);
+                used[(int)yytext[0]] = true;
+                terminal[(int)yytext[0]] = false;
+            }
+    \}          BEGIN(inTerminal);
+}
+
+<inTerminal>{
+    CHAR    {
+                add_symbol(g, true, yytext[0]);
+                used[(int)yytext[0]] = true;
+                terminal[(int)yytext[0]] = true;
+            }
+    \}          BEGIN(inDistinguished);
+}
+
+<inDistinguished>{
+    CHAR    {
+                if (!used[(int)yytext[0]] || terminal[(int)yytext[0]]) {
+                    // Error
                 }
-<PROD>\{    {
-                BEGIN PRODBEG;
+                set_distinguished_symbol(g, yytext[0]);
+                distinguished = true;
+            }
+    ,       { 
+                if (!distinguished) {
+                    // Error
+                }
+                BEGIN(inBeginProduction);
+            }
+}
+
+<inBeginProduction>{
+    CHAR    {
+                if (!used[(int)yytext[0]] || terminal[(int)yytext[0]]) {
+                    // Error
+                }
+                if (left_part != '\0') {
+                    // Error
+                }
+                left_part = yytext[0];
+            }
+    ->      {
+                if (left_part == '\0') {
+                    // Error
+                }
+                right = right_part[0] = right_part[1] = '\0';
+                BEGIN(inEndProduction);
+            }
+    \}      {
+                if (left_part != '\0') {
+                    // Error
+                }
+            }
+}
+<inEndProduction>{
+    CHAR    {
+                if (!used[(int)yytext[0]]) {
+                    // Error
+                }
+                right_part[right++] = yytext[0];
+            }
+    ,       {
+                if (right == 0) {
+                    // Error
+                }
+                add_production(g, left_part, right_part);
+                left_part = '\0';
+                BEGIN(inBeginProduction);
+            }
+    \|      {
+                right = right_part[0] = right_part[1] = '\0';
             }
 
-<PRODBEG>[A-Z]\ *->( *([a-z][A-Z]?|[A-Z][a-z]|\\) *\|)*\ *([a-z][A-Z]?|[A-Z][a-z]|\\)\ *,    {
-
-    int prodl = yytext[0];
-    for( i = 1 ; i < yylength ; i ++ ) {
-        curr = yytext[i];
-        if(curr == '|'){
-            //proxima produccion
-        }
-
-    }
+    \}      {
+                if (right == 0) {
+                    // Error
+                }
+                add_production(g, left_part, right_part);
+                BEGIN(0);
+            }
 }
 
-<PRODBEG>\}    {BEGIN END;}
-<END>\(    {//todo ok}
-    ;
-}
-
-
-
-
+.           // Pass
 
 %%
 
 struct grammar* parse_grammar_file(char* filename) {
 
-    struct grammar* g = create_grammar();
+    g = create_grammar();
 
     yyin = fopen(filename, "r");
     yylex();

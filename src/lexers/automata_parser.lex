@@ -16,8 +16,8 @@ static int           trans_count = 0;
 static int           symbols_numbers[MAX_SYMBOLS];
 static int           non_terminal_count = 0;
 static bool          symbol_is_final[MAX_SYMBOLS] = {0};
-
 static bool          final = false;
+
 %}
 
 ID          [0-9]+
