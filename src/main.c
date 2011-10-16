@@ -15,13 +15,13 @@ static void usage(char* filename) {
 
 int main(int argc, char** argv) {
 
-    if (argc < 1) {
+    if (argc < 2) {
         usage(argv[0]);
     }
 
     int len = strlen(argv[1]);
     char* dot = ".dot";
-    char* gc = ".gc";
+    char* gc = ".gr";
 
     struct grammar* g;
     struct automata* a;
@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
         strcpy(filename, argv[1]);
         strcpy(filename+len-3, "gr\0");
         filename[len-1] = '\0';
-        FILE* file = fopen(argv[1], "w");
+        FILE* file = fopen(filename, "w");
         grammar_output(file, g);
 
         destroy_grammar(g);
@@ -80,7 +80,6 @@ int main(int argc, char** argv) {
     else if (strcmp(gc, argv[1]+len-3) == 0) {
 
         g = parse_grammar_file(argv[1]);
-
         // 1) Símbolos terminales
         printf("Terminal symbols:\n\t");
         for (int i = 0; i < g->number_symbols; i++) {
@@ -121,7 +120,7 @@ int main(int argc, char** argv) {
         memset(filename, 0, 255);
         strcpy(filename, argv[1]);
         strcpy(filename+len-2, "png");
-        FILE* file = fopen(argv[1], "w");
+        FILE* file = fopen(filename, "w");
         struct grammar* right = as_right_normal_form(g); 
         automata_output(file, right);
 
