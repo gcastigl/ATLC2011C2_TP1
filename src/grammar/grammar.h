@@ -29,6 +29,22 @@ struct grammar {
     enum grammar_state  alignment;
 };
 
+struct transition {
+    int  from;
+    int  to;
+    char symbol;
+};
+
+struct automata {
+    int                 number_states;
+    char                states[MAX_SYMBOLS];
+    bool                final_state[MAX_SYMBOLS];
+    int                 number_transitions;
+    struct transition   transitions[MAX_PRODUCTIONS];
+    int                 number_chars;
+    char                chars[MAX_SYMBOLS];
+};
+
 struct grammar* create_grammar();
 
 int destroy_grammar(struct grammar* grammar);

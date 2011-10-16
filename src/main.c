@@ -5,28 +5,89 @@
 #include "lexers/lexers.h"
 #include "output/output.h"
 
+static void usage(char* filename) {
+    printf("Usage: \n %s [file]\n\n", filename);
+    exit(1);
+}
+
 int main(int argc, char** argv) {
 
-    struct grammar* grammar = create_grammar();
-    add_non_terminal(grammar, 'A');
-    add_non_terminal(grammar, 'B');
-    add_non_terminal(grammar, 'C');
-    add_terminal(grammar, 'a');
-    add_terminal(grammar, 'b');
-    add_terminal(grammar, 'c');
-    set_distinguished_symbol(grammar, 'A');
-    add_production(grammar, 'A', "Ba");
-    add_production(grammar, 'B', "Ac");
-    add_production(grammar, 'A', "Cc");
-    add_production(grammar, 'B', "b"); 
+    if (argc < 2) {
+        usage(argv[0]);
+    }
 
-    FILE* stream = fopen( "./TEST", "w");
-    struct grammar* right = as_right_normal_form(grammar);
-    automata_output(stream, right);
-    fclose(stream);
+    int len = strlen(argv[1]);
+    char* dot = ".dot";
+    char* gc = ".gc";
 
-    destroy_grammar(right);
-    destroy_grammar(grammar);
+    struct grammar* g;
+
+    if (strcmp(dot, argv[1]+len-4) == 0) {
+        
+        g = parse_automata_file(argv[1]);
+        // 1. Símbolos terminales.
+        // 2. Estados.
+        // 3. Estado inicial.
+        // 4. Conjunto de estados finales.
+        // 5. Tabla de la función de transición.
+        // 6. La especificación completa de la gramática equivalente.
+    }
+
+    else if (strcmp(gc, argv[1]+len-3) == 0) {
+
+        g = parse_grammar_file(argv[1]);
+
+        // 1) Símbolos terminales
+        printf("Terminal symbols:\n\t");
+        for (int i = 0; i < g->number_symbols; i++) {
+            if (g->symbols[i].terminal) {
+                if (i != 0) printf(", ");
+                prinftf("%c", g->symbols[i].representation);
+            }
+        }
+        
+        // 2) Símbolos no terminales
+        prinft("\n\nNon-terminal symbols:\n\t");
+        for (int i = 0; i < g->number_symbols; i++) {
+            if (!g->symbols[i].terminal) {
+                if (i != 0) printf(", ");
+                prinftf("%c", g->symbols[i].representation);
+            }
+        }
+
+        // 3) Símbolo inicial.
+        printf("\n\nDistinguished symbol: %c", g->distinguished_symbol);
+
+        // 4) Si la gramática es válida.
+        // ... a little late for that
+
+        // 5) Si la gramática es regular (en caso de que lo sea,
+        //    si es regular a derecha o a izquierda).
+        if (g->alignment == RIGHT_ALIGNED) {
+            printf("\n\nRight-Aligned grammar");
+        } else if (g->alignment == LEFT_ALIGNED) {
+            printf("\n\nLeft-Aligned grammar");
+        } else {
+            printf("\n\nUndefined alignment");
+        }
+
+        // 6) Un gráfico del automata finito equivalente.
+
+        char filename[255];
+        memset(filename, 0, 255);
+        strcpy(filename, argv[1]);
+        strcpy(filename+len-2, "png");
+        FILE* file = fopen(argv[1], "w");
+        struct grammar* right = as_right_normal_form(g); 
+        automata_output(file, right);
+
+        destroy_grammar(right);
+        destroy_grammar(g);
+    }
+
+    else {
+        usage(argv[0]);
+    }
 
     return 0;
 }

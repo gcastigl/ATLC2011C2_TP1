@@ -1,8 +1,8 @@
 #! /bin/sh
 
 # Cleanup
-rm TEST
-rm run
+rm -f TEST
+rm -f run
 rm -rf bin
 mkdir bin
 cd ./bin
@@ -14,7 +14,6 @@ INCLUDE='../src/'
 # Compile lex files
 touch automata_parser.c
 touch grammar_parser.c
-flex -o automata_parser.c ../src/lexers/automata_parser.lex
 flex -o grammar_parser.c ../src/lexers/grammar_parser.lex
 
 # Compile and link with other C sources
