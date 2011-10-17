@@ -43,12 +43,12 @@ ID          [0-9]+
 
 DIGRAPH     digraph
 
-FINALDEF    node\[shape=doublecircle]\ Node
-NODEDEF     node\[shape=circle]\ Node
+FINALDEF    node\[shape=doublecircle][ ]Node
+NODEDEF     node\[shape=circle][ ]Node
 
 TRANS_A     Node
 TRANS_B     ->Node
-TRANS_C     [:blank:]\[label=\"
+TRANS_C     \[label\=\"
 
 %x automataParser
 %x scanNodeSymbol
@@ -160,26 +160,23 @@ TRANS_C     [:blank:]\[label=\"
                 BEGIN(automataParser);
 }
 
-<automataParser> {
+<automataParser>{
     {FINALDEF}  {
                 final = true;
-                printf("finaldef");
                 BEGIN(scanNodeSymbol);
     }
 
     {NODEDEF}   {
                 final = false;
-                printf("notfinal");
                 BEGIN(scanNodeSymbol);
     }
 
     {TRANS_A}   {
-                printf("trans");
                 BEGIN(scanTransB);
     }
 }
 
-<scanNodeSymbol> {
+<scanNodeSymbol>{
     {ID} {
                 b->final_state[b->number_states] = final;
                 b->states[b->number_states++] = yytext[0];
@@ -187,13 +184,13 @@ TRANS_C     [:blank:]\[label=\"
     }
 }
 
-<scanTransB> {
+<scanTransB>{
     {ID}        b->transitions[b->number_states].from = yytext[0];
 
     {TRANS_B}   BEGIN(scanTransC);
 }
 
-<scanTransC> {
+<scanTransC>{
     {ID}    {
                 b->transitions[b->number_transitions].to = yytext[0];
     }
@@ -203,7 +200,7 @@ TRANS_C     [:blank:]\[label=\"
     }
 }
 
-<scanTransD> {
+<scanTransD>{
 
     \\\\     {
                 b->transitions[b->number_transitions++].symbol = '\\';
@@ -257,7 +254,7 @@ TRANS_C     [:blank:]\[label=\"
 int yywrap(void) {
     return 1;
 }
-
+ 
 struct grammar* parse_grammar_file(char* filename) {
 
     g = create_grammar();
@@ -270,7 +267,8 @@ struct grammar* parse_grammar_file(char* filename) {
 
 struct automata* parse_automata_file(char* filename) {
 
-    struct automata *b = (struct automata*)malloc(sizeof(struct automata));
+    b = (struct automata*)malloc(sizeof(struct automata));
+    memset(b, 0, sizeof(struct automata));
 
     yyin = fopen(filename, "r");
     yylex();

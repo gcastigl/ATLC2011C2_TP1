@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
         }
 
         // 3. Estado inicial.
-        printf("\n\nInitial state: q%c\n", a->states[0]);
+        printf("}\n\nInitial state: q%c\n", a->states[0]);
 
         // 4. Conjunto de estados finales.
         printf("\nFinal states = {");
