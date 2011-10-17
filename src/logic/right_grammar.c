@@ -367,6 +367,10 @@ static bool has_unproductive_productions(struct grammar* grammar) {
             for (int j = 0; j < grammar->number_productions; j++) {
             
                 if (grammar->productions[j].left_part.representation ==
+                    grammar->symbols[i].representation ||
+                    grammar->productions[j].right_part[0].representation ==
+                    grammar->symbols[i].representation ||
+                    grammar->productions[j].right_part[1].representation ==
                     grammar->symbols[i].representation
                 ){
                     unproductive = false;
@@ -403,6 +407,10 @@ static struct grammar* take_out_unproductive_production(struct grammar* source)
             for (int j = 0; j < source->number_productions; j++) {
                 
                 if (source->productions[j].left_part.representation ==
+                    source->symbols[i].representation ||
+                    source->productions[j].right_part[0].representation ==
+                    source->symbols[i].representation ||
+                    source->productions[j].right_part[1].representation ==
                     source->symbols[i].representation
                 ){
 

@@ -1,11 +1,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include "logic/grammar.h"
 #include "lexers/lexers.h"
 #include "output/output.h"
 
+static int baseName(char* path);
 static void print_ascii_table_for_automata(struct automata* a);
 
 static void usage(char* filename) {
@@ -64,15 +67,10 @@ int main(int argc, char** argv) {
         print_ascii_table_for_automata(a);
 
         // 6. La especificación completa de la gramática equivalente.
-		
-		
-		
         g = automata_to_grammar(a);
-		
-		struct grammar * aux = take_out_unreachable(g);
-		destroy_grammar(g);
-		g = aux;
-
+        struct grammar * aux = take_out_unreachable(g);
+        destroy_grammar(g);
+        g = aux;
         char filename[255];
         memset(filename, 0, 255);
         strcpy(filename, argv[1]);
@@ -130,10 +128,15 @@ int main(int argc, char** argv) {
 
         // 6) Un gráfico del automata finito equivalente.
 
-        char filename[255];
+        char filename[255], execCmd[255], pngFileName[50];
         memset(filename, 0, 255);
         strcpy(filename, argv[1]);
         strcpy(filename+len-2, "dot");
+        int fileNameIndex = baseName(argv[1]) + 1;
+        strcpy(pngFileName, argv[1] + fileNameIndex);
+        int pngFileNameLen = strlen(pngFileName);
+        strcpy(pngFileName + pngFileNameLen - 2, "png");
+
         FILE* file = fopen(filename, "w");
         if (g->alignment != RIGHT_ALIGNED) {
             struct grammar* right = as_right_normal_form(g); 
@@ -142,6 +145,13 @@ int main(int argc, char** argv) {
             destroy_grammar(right);
         } else {
             automata_output(file, g);
+            mkdir("output", S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+            sprintf(execCmd, "dot -T png -o output/%s %s",
+                pngFileName,
+                filename
+            );
+            fclose(file);
+            system(execCmd);
         }
         
         destroy_grammar(g);
@@ -154,6 +164,16 @@ int main(int argc, char** argv) {
     return 0;
 }
 
+static int baseName(char* path) {
+    int i = 0, lastSlash = 0;
+    while(path[i] != '\0') {
+        if (path[i] == '/') {
+            lastSlash = i;
+        }
+        i++;
+    }
+    return lastSlash;
+}
 
 void print_ascii_table_for_automata(struct automata* a) {
     return;
