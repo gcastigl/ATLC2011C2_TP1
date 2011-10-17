@@ -141,7 +141,7 @@ static void check_reachable(struct grammar* grammar,
  *
  * @param source the original grammar
  */
-static struct grammar* take_out_unreachable(struct grammar* source) {
+struct grammar* take_out_unreachable(struct grammar* source) {
     
     struct grammar* new = create_grammar();    
 

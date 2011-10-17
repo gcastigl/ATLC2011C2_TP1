@@ -68,5 +68,7 @@ bool symbol_exists(struct grammar* grammar, char symbol);
 
 bool symbol_is_not_terminal(struct grammar* grammar, char symbol);
 
+struct grammar* take_out_unreachable(struct grammar* source);
+
 #endif
 
