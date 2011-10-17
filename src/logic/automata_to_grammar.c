@@ -17,16 +17,12 @@ struct grammar* automata_to_grammar(struct automata* b) {
         used[(int)b->transitions[i].symbol] = true;
     }
 
+
     int preffered = 'A';
     for (int i = 0; i < b->number_states; i++) {
         
         while(preffered < 255 && used[preffered++]);
-
         add_symbol(g, false, preffered);
-
-        b->final_state[b->number_states] = b->final_state[i];
-        b->states[b->number_states++] = preffered;
-
         number_to_symbol[i] = preffered;
         used[preffered] = true;
 
