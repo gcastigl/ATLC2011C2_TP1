@@ -55,7 +55,12 @@ int destroy_grammar(struct grammar* grammar) {
 
 int add_symbol(struct grammar* grammar, bool terminal, char symbol) {
     if (symbol_exists(grammar, symbol)) {
-        return -1;
+        if ((terminal && symbol_is_not_terminal(grammar, symbol)) || 
+                (!terminal && symbol_is_terminal(grammar, symbol))) {
+            return -1;
+        } else {
+            return 0;
+        }
     }
     grammar->symbols[grammar->number_symbols].terminal = terminal;
     grammar->symbols[grammar->number_symbols].representation = symbol;

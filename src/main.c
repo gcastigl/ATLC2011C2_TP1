@@ -84,7 +84,7 @@ int main(int argc, char** argv) {
         bool first = true;
         printf("Terminal symbols:\n\t");
         for (int i = 0; i < g->number_symbols; i++) {
-            if (g->symbols[i].terminal) {
+            if (g->symbols[i].terminal && g->symbols[i].representation != '\\') {
                 if (!first) printf(", ");
                 first = false;
                 printf("%c", g->symbols[i].representation);

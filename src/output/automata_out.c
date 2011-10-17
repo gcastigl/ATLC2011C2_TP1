@@ -63,6 +63,12 @@ void automata_output(FILE* outfile, struct grammar* grammar) {
         else if (right_part2->representation == '\0') {
             to_number = nonterminal_count;
             transition_char[0] = right_part1->representation;
+            // A -> \\ Production
+            if (right_part1->representation == '\\') {
+                to_number = nonterminal_count;
+                transition_char[0] = '\\';
+                transition_char[1] = '\\';
+            }
         }
         // A -> aA Production
         else if (right_part1->terminal == true &&
@@ -70,12 +76,6 @@ void automata_output(FILE* outfile, struct grammar* grammar) {
         ){
             to_number = char_map[(int)right_part2->representation];
             transition_char[0] = right_part1->representation;
-        }
-        // A -> \\ Production
-        else if (right_part1->representation == '\\') {
-            to_number = nonterminal_count;
-            transition_char[0] = '\\';
-            transition_char[1] = '\\';
         }
         else {
             fprintf(stderr, "Error: invalid grammar. "

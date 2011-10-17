@@ -68,7 +68,10 @@ TRANS_C     [:blank:]\[label=\"
 
 <inNonTerminal>{
     {CHAR}  {
-                add_symbol(g, false, yytext[0]);
+                if (add_symbol(g, false, yytext[0]) != 0) {
+                    printf("Error. A symbol was used as a terminal and as a non-terminal.\n");
+                    exit(1);
+                }
                 used[(int)yytext[0]] = true;
                 terminal[(int)yytext[0]] = false;
             }
@@ -79,7 +82,10 @@ TRANS_C     [:blank:]\[label=\"
 
 <inTerminal>{
     {CHAR}  {
-                add_symbol(g, true, yytext[0]);
+                if (add_symbol(g, true, yytext[0]) != 0) {
+                    printf("Error. A symbol was used as a terminal and as a non-terminal.\n");
+                    exit(1);
+                }
                 used[(int)yytext[0]] = true;
                 terminal[(int)yytext[0]] = true;
             }
@@ -90,10 +96,10 @@ TRANS_C     [:blank:]\[label=\"
 
 <inDistinguished>{
     {CHAR}  {
-                if (!used[(int)yytext[0]] || terminal[(int)yytext[0]]) {
-                    // Error
+                if (set_distinguished_symbol(g, yytext[0]) != 0) {
+                    printf("Error. The distinguished symbol is not a non-terminal Symbol.\n");
+                    exit(1);
                 }
-                set_distinguished_symbol(g, yytext[0]);
                 distinguished = true;
             }
     ,       { 
@@ -138,12 +144,17 @@ TRANS_C     [:blank:]\[label=\"
                 if (right == 0) {
                     // Error
                 }
-                add_production(g, left_part, right_part);
+                if (add_production(g, left_part, right_part) != 0) {
+                    printf("Error. The grammar is not regular.\n");
+                    exit(1);
+                }
                 left_part = '\0';
                 BEGIN(inBeginProduction);
             }
     \|      {
-                add_production(g, left_part, right_part);
+                if (add_production(g, left_part, right_part) != 0) {
+                    printf("Error. The grammar is not regular.\n");
+                }
                 right = right_part[0] = right_part[1] = '\0';
             }
 
@@ -151,8 +162,20 @@ TRANS_C     [:blank:]\[label=\"
                 if (right == 0) {
                     // Error
                 }
-                add_production(g, left_part, right_part);
+                if (add_production(g, left_part, right_part) != 0) {
+                    printf("Error. The grammar is not regular.\n");
+                }
                 BEGIN(inGrammar);
+            }
+    \\      {
+                if (!used[(int)yytext[0]]) {
+                    // Error
+                }
+                 if (add_symbol(g, true, yytext[0]) != 0) {
+                    printf("Error. Dude, you used lambda as a non-terminal.\n");
+                    exit(1);
+                }
+                right_part[right++] = yytext[0];                
             }
 }
 
@@ -160,7 +183,7 @@ TRANS_C     [:blank:]\[label=\"
                 BEGIN(automataParser);
 }
 
-<automataParser> {
+<automataParser>{
     {FINALDEF}  {
                 final = true;
                 printf("finaldef");
@@ -179,7 +202,7 @@ TRANS_C     [:blank:]\[label=\"
     }
 }
 
-<scanNodeSymbol> {
+<scanNodeSymbol>{
     {ID} {
                 b->final_state[b->number_states] = final;
                 b->states[b->number_states++] = yytext[0];
@@ -187,13 +210,13 @@ TRANS_C     [:blank:]\[label=\"
     }
 }
 
-<scanTransB> {
+<scanTransB>{
     {ID}        b->transitions[b->number_states].from = yytext[0];
 
     {TRANS_B}   BEGIN(scanTransC);
 }
 
-<scanTransC> {
+<scanTransC>{
     {ID}    {
                 b->transitions[b->number_transitions].to = yytext[0];
     }
@@ -203,7 +226,7 @@ TRANS_C     [:blank:]\[label=\"
     }
 }
 
-<scanTransD> {
+<scanTransD>{
 
     \\\\     {
                 b->transitions[b->number_transitions++].symbol = '\\';
