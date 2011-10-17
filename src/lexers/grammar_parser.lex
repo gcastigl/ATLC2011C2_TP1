@@ -233,6 +233,21 @@ TRANS_C     \[label\=\"
     }
 }
 
+\n                      // Pass
+
+<inGrammar>\n           // Pass
+<inNonTerminal>\n       // Pass
+<inTerminal>\n          // Pass
+<inDistinguished>\n     // Pass
+<inBeginProduction>\n   // Pass
+<inEndProduction>\n     // Pass
+
+<automataParser>\n      // Pass
+<scanNodeSymbol>\n      // Pass
+<scanTransB>\n          // Pass
+<scanTransC>\n          // Pass
+<scanTransD>\n          // Pass
+
 .                       // Pass
 
 <inGrammar>.            // Pass
@@ -241,7 +256,6 @@ TRANS_C     \[label\=\"
 <inDistinguished>.      // Pass
 <inBeginProduction>.    // Pass
 <inEndProduction>.      // Pass
-
 
 <automataParser>.       // Pass
 <scanNodeSymbol>.       // Pass

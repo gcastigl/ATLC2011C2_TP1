@@ -110,13 +110,15 @@ int main(int argc, char** argv) {
 
         // 5) Si la gramática es regular (en caso de que lo sea,
         //    si es regular a derecha o a izquierda).
+        printf("\n\n");
         if (g->alignment == RIGHT_ALIGNED) {
-            printf("\n\nRight-Aligned grammar");
+            printf("Right-Aligned grammar");
         } else if (g->alignment == LEFT_ALIGNED) {
-            printf("\n\nLeft-Aligned grammar");
+            printf("Left-Aligned grammar");
         } else {
-            printf("\n\nUndefined alignment");
+            printf("Undefined alignment");
         }
+        printf("\n\n");
 
         // 6) Un gráfico del automata finito equivalente.
 
