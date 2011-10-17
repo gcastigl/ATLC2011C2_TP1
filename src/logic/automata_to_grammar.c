@@ -24,9 +24,6 @@ struct grammar* automata_to_grammar(struct automata* b) {
 
         add_symbol(g, false, preffered);
 
-        b->final_state[b->number_states] = b->final_state[i];
-        b->states[b->number_states++] = preffered;
-
         number_to_symbol[i] = preffered;
         used[preffered] = true;
 
