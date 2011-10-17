@@ -57,6 +57,8 @@ int main(int argc, char** argv) {
             }
         }
 
+        printf("}\n");
+
         // 5. Tabla de la función de transición.
         // TODO
         print_ascii_table_for_automata(a);
