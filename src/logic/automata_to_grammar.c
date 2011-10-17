@@ -14,8 +14,10 @@ struct grammar* automata_to_grammar(struct automata* b) {
 
     char number_to_symbol[255];
     for (int i = 0; i < b->number_transitions; i++) {
-        add_symbol(g, true, b->transitions[i].symbol);
-        nt_used[(int)b->transitions[i].symbol] = true;
+		if(b->transitions[i].symbol != '\\'){
+			add_symbol(g, true, b->transitions[i].symbol);
+			nt_used[(int)b->transitions[i].symbol] = true;
+		}
     }
 
 
@@ -29,8 +31,10 @@ struct grammar* automata_to_grammar(struct automata* b) {
         t_used[preffered] = true;
 
         if (b->final_state[i]) {
-            char lambda_production[2] = { '\\', '\0' };
-            add_production(g, (char)preffered, lambda_production);
+            //char lambda_production[2] = { '\\', 0 };
+            //int ret = add_production(g, (char)preffered, lambda_production);
+			//printf("RET = %d\n",ret);
+			add_lambda_production(g,(char) preffered);
         }
     }
 
@@ -38,11 +42,16 @@ struct grammar* automata_to_grammar(struct automata* b) {
 
     for (int i = 0; i < b->number_transitions; i++) {
         
-        char prod[3] = { 
-            b->transitions[i].symbol,
-            number_to_symbol[b->transitions[i].to],
-			0
-        };
+		char prod[3];
+		if(b->transitions[i].symbol != '\\'){
+			prod[0] = b->transitions[i].symbol;
+			prod[1] = number_to_symbol[b->transitions[i].to];
+			prod[2] = 0;
+		}
+		else{
+			prod[0] = number_to_symbol[b->transitions[i].to];
+			prod[1] = 0;
+		}
         add_production(g, number_to_symbol[b->transitions[i].from], prod);
     }
 

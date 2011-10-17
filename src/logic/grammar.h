@@ -49,6 +49,8 @@ struct grammar* create_grammar();
 
 int destroy_grammar(struct grammar* grammar);
 
+int add_lambda_production(struct grammar* grammar, char left_part);
+
 int add_symbol(struct grammar* grammar, bool terminal, char symbol_name);
 
 int add_production(struct grammar* grammar, char left_part, char* right_part);

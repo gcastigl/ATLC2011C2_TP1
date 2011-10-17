@@ -29,6 +29,8 @@ bool symbol_exists(struct grammar* grammar, char symbol) {
 
 bool symbol_is_terminal(struct grammar* grammar, char symbol) {
     int i;
+	if(symbol=='\\')
+		return true;
     for (i = 0; i < grammar->number_symbols; i++) {
         if (grammar->symbols[i].representation == symbol &&
             grammar->symbols[i].terminal)
@@ -69,12 +71,41 @@ int set_distinguished_symbol(struct grammar* grammar, char symbol) {
         return 0;
     }
     return -1;
-}   
+}
+
+int add_lambda_production(struct grammar* grammar, char left_part) {
+	
+	struct symbol *left_symbol = &(grammar->
+        productions[grammar->number_productions].left_part);
+    left_symbol->representation = left_part;
+    left_symbol->terminal = symbol_is_terminal(grammar, left_part);
+	 struct symbol *right_symbol1 = &(grammar->
+        productions[grammar->number_productions].right_part[0]);
+
+    right_symbol1->representation = '\\';
+    right_symbol1->terminal = true;
+
+    struct symbol *right_symbol2 = &(grammar->
+        productions[grammar->number_productions].right_part[1]);
+	
+	right_symbol2->representation = '\0';
+	
+	(grammar->number_productions)++;
+
+    return 0;
+	
+	
+	
+}
+
 
 int add_production(struct grammar* grammar, char left_part, char* right_part) {
     
-    int len = strlen(right_part);    
     
+	
+	int len = strlen(right_part);
+	
+	
     if (symbol_is_terminal(grammar, left_part)) {
         return -1;
     }
