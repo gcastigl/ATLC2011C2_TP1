@@ -51,11 +51,10 @@ void automata_output(FILE* outfile, struct grammar* grammar) {
         int from_number, to_number;
         char transition_char[3] = {0, 0, 0};
 
-        from_number = char_map[(int)left_part->representation];
-
+        from_number = integer_map[(int)left_part->representation];
         // A -> A  Production
         if (right_part1->terminal == false) {
-            to_number = char_map[(int)right_part1->representation];
+            to_number = integer_map[(int)right_part1->representation];
             transition_char[0] = '\\';
             transition_char[1] = '\\';
         }
@@ -74,7 +73,7 @@ void automata_output(FILE* outfile, struct grammar* grammar) {
         else if (right_part1->terminal == true &&
                  right_part2->terminal == false
         ){
-            to_number = char_map[(int)right_part2->representation];
+            to_number = integer_map[(int)right_part2->representation];
             transition_char[0] = right_part1->representation;
         }
         else {
@@ -83,7 +82,6 @@ void automata_output(FILE* outfile, struct grammar* grammar) {
             );
             return;
         }
-
         fprintf(outfile, "Node%d->Node%d [label=\"%s\"];\n\t",
             from_number, to_number, transition_char
         );

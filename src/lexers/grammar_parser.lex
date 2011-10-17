@@ -43,12 +43,12 @@ ID          [0-9]+
 
 DIGRAPH     digraph
 
-FINALDEF    node\[shape=doublecircle]\ Node
-NODEDEF     node\[shape=circle]\ Node
+FINALDEF    node\[shape=doublecircle][ ]Node
+NODEDEF     node\[shape=circle][ ]Node
 
 TRANS_A     Node
 TRANS_B     ->Node
-TRANS_C     [:blank:]\[label=\"
+TRANS_C     \[label\=\"
 
 %x automataParser
 %x scanNodeSymbol
@@ -186,18 +186,15 @@ TRANS_C     [:blank:]\[label=\"
 <automataParser>{
     {FINALDEF}  {
                 final = true;
-                printf("finaldef");
                 BEGIN(scanNodeSymbol);
     }
 
     {NODEDEF}   {
                 final = false;
-                printf("notfinal");
                 BEGIN(scanNodeSymbol);
     }
 
     {TRANS_A}   {
-                printf("trans");
                 BEGIN(scanTransB);
     }
 }
@@ -205,20 +202,20 @@ TRANS_C     [:blank:]\[label=\"
 <scanNodeSymbol>{
     {ID} {
                 b->final_state[b->number_states] = final;
-                b->states[b->number_states++] = yytext[0];
+                b->states[b->number_states++] = atoi(yytext);
                 BEGIN(automataParser);
     }
 }
 
 <scanTransB>{
-    {ID}        b->transitions[b->number_states].from = yytext[0];
+    {ID}        b->transitions[b->number_transitions].from = atoi(yytext);
 
     {TRANS_B}   BEGIN(scanTransC);
 }
 
 <scanTransC>{
     {ID}    {
-                b->transitions[b->number_transitions].to = yytext[0];
+                b->transitions[b->number_transitions].to = atoi(yytext);
     }
 
     {TRANS_C} {
@@ -237,7 +234,7 @@ TRANS_C     [:blank:]\[label=\"
                 }
     }
 
-    >{CHAR}  {
+    {CHAR}  {
                 b->transitions[b->number_transitions++].symbol =
                     yytext[0];
 
@@ -247,7 +244,7 @@ TRANS_C     [:blank:]\[label=\"
                 }
     }
 
-    >\/      {
+    \/      {
                 b->transitions[b->number_transitions].from =
                     b->transitions[b->number_transitions-1].from;
                 b->transitions[b->number_transitions].to =
@@ -259,6 +256,21 @@ TRANS_C     [:blank:]\[label=\"
     }
 }
 
+\n                      // Pass
+
+<inGrammar>\n           // Pass
+<inNonTerminal>\n       // Pass
+<inTerminal>\n          // Pass
+<inDistinguished>\n     // Pass
+<inBeginProduction>\n   // Pass
+<inEndProduction>\n     // Pass
+
+<automataParser>\n      // Pass
+<scanNodeSymbol>\n      // Pass
+<scanTransB>\n          // Pass
+<scanTransC>\n          // Pass
+<scanTransD>\n          // Pass
+
 .                       // Pass
 
 <inGrammar>.            // Pass
@@ -267,7 +279,6 @@ TRANS_C     [:blank:]\[label=\"
 <inDistinguished>.      // Pass
 <inBeginProduction>.    // Pass
 <inEndProduction>.      // Pass
-
 
 <automataParser>.       // Pass
 <scanNodeSymbol>.       // Pass
@@ -293,7 +304,8 @@ struct grammar* parse_grammar_file(char* filename) {
 
 struct automata* parse_automata_file(char* filename) {
 
-    struct automata *b = (struct automata*)malloc(sizeof(struct automata));
+    b = (struct automata*)malloc(sizeof(struct automata));
+    memset(b, 0, sizeof(struct automata));
 
     yyin = fopen(filename, "r");
     yylex();

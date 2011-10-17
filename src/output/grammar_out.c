@@ -63,7 +63,7 @@ void grammar_output(FILE* outfile, struct grammar* grammar) {
                         grammar->productions[j].right_part[0].representation
                     );
 
-                    if (grammar->productions[j].right_part[0].representation
+                    if (grammar->productions[j].right_part[1].representation
                         != '\0')
                     {
                         fprintf(outfile, "%c",
