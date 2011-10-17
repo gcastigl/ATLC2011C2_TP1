@@ -58,13 +58,82 @@
 
 \setcounter{page}{1}
 
-\section{Consideraciones realizadas}
+\newpage
 
-\section{ Descripción del desarrollo}
+\section{Resumen}
+El trabajo práctico consistia en poder leer tanto un autómata como una gramática y transformarlo en su contraparte
+ equivalente. Para esto, era necesario leer e interpretar los archivos de entrada con archivos de \textit{lex}.
+
+\newpage
+
+\section{Consideraciones realizadas}
+    No hubo consideraciones externas hechas ya que en caso de errores en los archivos de entradas era nuestro trabajo
+     detectarlos. Por otra parte, dentro de la lógica del programa si se valida que la gramática sea coherente 
+      (por ejemplo que no hayan caracteres repetidos entre los símbolos terminales y los no terminales) y regular
+      (en caso que el archivo de entrada sea una gramática). En caso de que el archivo de entrada sea un autómata
+      bastaba con chequear su validez como autómata.
+
+\newpage
+
+\section{Descripción del desarrollo}
+    Al comienzo, pudimos detectar distintos módulos del trábajo. Estos implicaban tanto leer un autómata o una gramática
+     y dejar sus datos de forma accesible en las estructuras correctas. Estos \textit{parsers} eran los encargados
+      de validar los datos de entrada.
+      
+      Luego contabamos con los módulos que manipulaban las estructuras, pasando de autómata a gramática y viseversa.
+      También era necesario un algoritmo que transforme cualquier tipo de gramáticas regulares en gramáticas 
+       regulares derechas.
+
+      Por último, existian los modulos de \textit{output} que debían contemplar tanto el caso en que se quiera imprimir
+       un autómata como una grámatica.
+      El siguiente gráfico muestra la la estructura que pensamos inicialmente como nuestro programa.
+
+      PONER GRAFICO
+
+      Luego de un segundo análisis comprendimos que no era necesario contar con una estructura que represente
+       un autómata, pues era sencillo hacer la conversión entre ambas partes sin contar con esta estructura.
+      Así, se formo este segundo diagrama:
+
+      PONER GRAFICO
+
+      Al llegar al final del trabajo, comprendimos que por la manera en que era pedida la muestra de datos,
+       era cómodo contar con la estructura que representaba al autómata. Así, nuestra versión final es bastante similar
+       a la primera.
+
+      A continuación se realiza un análisis un poco más profundo en cada uno de los modulos.
+
+      \newpage
+
+      \subsection{Parsers}
+            Para realizar la interpretación de los archivos de entrada, primero fue necesario familiarizarse con
+            \textit{lex}. Esto era muy importante ya que no podían quedar reglas sin especificar. 
+            Luego, fue esencial modelar el \textit{parser} como una maquina de estados. De este modo y teniendo
+            todos los estados posibles identificados fue sencillo plasmar código de C que realice lo que cada caso
+            requería. 
+            Estos procesos fueron llevados a cabo tanto para leer un autómata o una gramática.
+      \subsection{Conversión entre estructuras}
+            Dados los algoritmos vistos en clase y ciertas pruebas que hicimos fue sencillo ubicar los algoritmos
+            para convertir autómatas en gramáticas y viseversa.
+
+            FALTA EXPLICAR BIEN CADA UNO
+      \subsection{Conversion de gramática a gramática alineada a derecha}
+            QUE LO HAGA ALGUIEN QUE SEPA BIEN QUE HACE EL ALGORITMO
+      \subsection{Output}
+            El \textit{output} no presentó una complicación mayor ya que al contar con los formatos de salida 
+            requeridos y al tener los datos ordenados en estructuras correctas, el proceso fue casi intuitivo.
+            Por otra parte hubo que tener cuidado con el uso de \textit{graphbiz}, pero acompañados de ciertos
+            conocimientos previos esto tampoco presento una grán complicación.
+
+\newpage
 
 \section{Dificultades encontradas}
+    Más alla de los cambios que hubo que ir haciendo en el diseño de la aplicación y algún que otro \textit{bug} 
+    , podemos decir que no nos topamos con dificultades muy grandes. Igualmente, es interesante notar hubo que 
+    familiarizarse con la sintaxis de \textit{lex} y que el algoritmo para transformar una gramática en una 
+    gramática alineada a dereche no fue sencillo de implementar.
+\newpage
 
 \section{Futuras Extensiones}
-
+    HAHAHAHA, SERIOUSLY? HAAHHAAHAHAHAH
 \end{document}
 
