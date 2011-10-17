@@ -63,7 +63,6 @@ int main(int argc, char** argv) {
         printf("}\n");
 
         // 5. Tabla de la función de transición.
-        // TODO
         print_ascii_table_for_automata(a);
 
         // 6. La especificación completa de la gramática equivalente.
@@ -170,6 +169,12 @@ static int baseName(char* path) {
 }
 
 void print_ascii_table_for_automata(struct automata* a) {
-    return;
+	printf("\nTransition table:\n\n");
+	printf("\nFrom\tto\tcharacter\n");
+	for (int i = 0; i < a->number_transitions; i++) {
+		struct transition transit = a->transitions[i];
+		printf("|%2d\t|%2d\t|%2c\t|\n", transit.from, transit.to, transit.symbol);
+	}
+	return;
 }
 
