@@ -1,0 +1,6 @@
+GTEST = (
+		{ A, B, C},
+		{ a, b, c},
+		{A},
+		{ A -> Aa | Bb, B-> Bc | Cc, C -> c }
+)
