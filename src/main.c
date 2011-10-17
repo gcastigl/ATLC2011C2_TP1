@@ -133,7 +133,7 @@ int main(int argc, char** argv) {
         char filename[255];
         memset(filename, 0, 255);
         strcpy(filename, argv[1]);
-        strcpy(filename+len-2, "png");
+        strcpy(filename+len-2, "dot");
         FILE* file = fopen(filename, "w");
         if (g->alignment != RIGHT_ALIGNED) {
             struct grammar* right = as_right_normal_form(g); 

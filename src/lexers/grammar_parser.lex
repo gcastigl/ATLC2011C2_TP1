@@ -179,20 +179,20 @@ TRANS_C     \[label\=\"
 <scanNodeSymbol>{
     {ID} {
                 b->final_state[b->number_states] = final;
-                b->states[b->number_states++] = convert_id(yytext, yyleng);
+                b->states[b->number_states++] = atoi(yytext);
                 BEGIN(automataParser);
     }
 }
 
 <scanTransB>{
-    {ID}        b->transitions[b->number_transitions].from = convert_id(yytext, yyleng);
+    {ID}        b->transitions[b->number_transitions].from = atoi(yytext);
 
     {TRANS_B}   BEGIN(scanTransC);
 }
 
 <scanTransC>{
     {ID}    {
-                b->transitions[b->number_transitions].to = convert_id(yytext, yyleng);
+                b->transitions[b->number_transitions].to = atoi(yytext);
     }
 
     {TRANS_C} {
@@ -269,19 +269,6 @@ int yywrap(void) {
     return 1;
 }
 
-int convert_id(char* yytext, int yyleng) {
-
-	int k;
-	int mult = 1;
-	int ret = 0;
-	for(k = 0; k < yyleng; k ++) {
-		ret += (yytext[yyleng-1-k]-'0') * mult;
-		mult *=10;
-	}
-	return ret;
-
-}
- 
 struct grammar* parse_grammar_file(char* filename) {
 
     g = create_grammar();
