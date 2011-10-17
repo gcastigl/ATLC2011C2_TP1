@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
         printf("\n\nStates: \n\t{");
         for (int i = 0; i < a->number_states; i++) {
             if (i != 0) printf(", ");
-            printf("q%c", a->states[i]);
+            printf("q%d", a->states[i]);
         }
 
         // 3. Estado inicial.
@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
         for (int i = 0; i < a->number_states; i++) {
             if (a->final_state[i]) {
                 if (!first) printf(", ");
-                printf("q%c", a->states[i]);
+                printf("q%d", a->states[i]);
             }
         }
 
