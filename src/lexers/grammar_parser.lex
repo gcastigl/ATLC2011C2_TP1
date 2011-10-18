@@ -10,6 +10,8 @@
 
 static struct automata    *b;
 static bool               final = false;
+static bool               symbol_found = false;
+static bool               state_exists[65536];
 
 /* Grammar parser */
 
@@ -44,6 +46,7 @@ ID          [0-9]+
 DIGRAPH     digraph
 
 FINALDEF    node\[shape=doublecircle][ ]Node
+ENDDEF      \"];
 NODEDEF     node\[shape=circle][ ]Node
 
 TRANS_A     Node
@@ -55,6 +58,7 @@ TRANS_C     \[label\=\"
 %x scanTransB
 %x scanTransC
 %x scanTransD
+%x scanEndDef
 
 %%
 
@@ -211,6 +215,19 @@ TRANS_C     \[label\=\"
 
 <scanNodeSymbol>{
     {ID} {
+                if (used[(int)yytext[0]]) {
+                    printf("Error. The node %c is already used.\n", yytext[0]);
+                    exit(1);
+                }
+                if (atoi(yytext) == -1) {
+                    printf("Error. The states should be with the name \"NodeX\" with X a number\n");
+                    exit(1);
+                }
+                if (state_exists[atoi(yytext)]) {
+                    printf("Error. Duplicated id for a state\n");
+                    exit(1);
+                }
+                state_exists[atoi(yytext)] = true;
                 b->final_state[b->number_states] = final;
                 b->states[b->number_states++] = atoi(yytext);
                 BEGIN(automataParser);
@@ -218,17 +235,38 @@ TRANS_C     \[label\=\"
 }
 
 <scanTransB>{
-    {ID}        b->transitions[b->number_transitions].from = atoi(yytext);
+    {ID} {
+                if (atoi(yytext) == -1) {
+                    printf("Error. The states should be with the name \"NodeX\" with X a number\n");
+                    exit(1);
+                }
+                if (state_exists[atoi(yytext)]) {
+                    b->transitions[b->number_transitions].from = atoi(yytext);
+                } else {
+                    printf("Error. No such state with ID %d\n", atoi(yytext));
+                    exit(1);
+                }
+    }
 
     {TRANS_B}   BEGIN(scanTransC);
 }
 
 <scanTransC>{
     {ID}    {
-                b->transitions[b->number_transitions].to = atoi(yytext);
+                if (atoi(yytext) == -1) {
+                    printf("Error. The states should be with the name \"NodeX\" with X a number\n");
+                    exit(1);
+                }
+                if (state_exists[atoi(yytext)]) {
+                    b->transitions[b->number_transitions].to = atoi(yytext);
+                } else {
+                    printf("Error. No such state with ID %d\n", atoi(yytext));
+                    exit(1);
+                }
     }
 
     {TRANS_C} {
+                symbol_found = false;
                 BEGIN(scanTransD);
     }
 }
@@ -245,6 +283,7 @@ TRANS_C     \[label\=\"
     }
 
     {CHAR}  {
+                symbol_found = true;
                 b->transitions[b->number_transitions++].symbol =
                     yytext[0];
 
@@ -255,6 +294,10 @@ TRANS_C     \[label\=\"
     }
 
     \/      {
+                if (!symbol_found) {
+                    printf("Error. \/ symbol found, but no previous declaration\n");
+                    exit(1);
+                }
                 b->transitions[b->number_transitions].from =
                     b->transitions[b->number_transitions-1].from;
                 b->transitions[b->number_transitions].to =
@@ -265,6 +308,13 @@ TRANS_C     \[label\=\"
                 BEGIN(automataParser);
     }
 }
+
+<scanEndDef>{
+    {ENDDEF}    {
+                BEGIN(automataParser);
+    }
+}
+
 
 \n                      // Pass
 
