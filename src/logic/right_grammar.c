@@ -223,10 +223,10 @@ static struct grammar* replace_lambda_with_M(struct grammar* source) {
         right_part[1] = source->productions[i].right_part[1].representation;
 
         if (right_part[0] == '\\') {
-            right_part[1] = '\\';
+			right_part[1] = '\\';
             right_part[0] = '\t';
         }
-        else if (right_part[1] == '\0') {
+		else if (right_part[1] == '\0') {
             right_part[1] = right_part[0];
             right_part[0] = '\t';
         }
@@ -336,24 +336,23 @@ static struct grammar* reverse_productions(struct grammar* source) {
         if (source->productions[i].right_part[0].terminal == false &&
             source->productions[i].right_part[1].terminal == true
         ){
-            if (new_production[0] == source->distinguished_symbol) {
-                new_production[0] = '\t';
-            }
-            if (new_production[1] == source->distinguished_symbol) {
-                new_production[1] = '\t';
-            }
-
             char temp = new_production[0];
             new_production[0] = new_production[1];
+			if( source->productions[i].right_part[1].representation != '\\' ){
+				new_production[1] = new_production[2];
+				new_production[2] = temp;
+			}
+			else{
+				new_production[1] = temp;
+				new_production[2] = 0;
+			}
+			
+			
+             
+        }
 
-            if( source->productions[i].right_part[1].representation != '\\' ){
-                new_production[1] = new_production[2];
-                new_production[2] = temp;
-            }
-            else{
-                new_production[1] = temp;
-                new_production[2] = 0;
-            }
+        if (new_production[2] == source->distinguished_symbol) {
+            new_production[2] = '\t';
         }
         add_production(new, new_production[0], new_production+1);
     }
@@ -367,7 +366,7 @@ static struct grammar* reverse_productions(struct grammar* source) {
  * @param grammar the grammar to work with
  * @return        true if the grammar has unproductive productions
  */
-static bool has_unproductive_productions(struct grammar* grammar) {
+bool has_unproductive_productions(struct grammar* grammar) {
 
     for (int i = 0; i < grammar->number_symbols; i++) {
 
@@ -403,7 +402,7 @@ static bool has_unproductive_productions(struct grammar* grammar) {
  * @return       a new grammar with less (not warranty of all deleted)
  *               unproductive productions
  */
-static struct grammar* take_out_unproductive_production(struct grammar* source)
+struct grammar* take_out_unproductive_production(struct grammar* source)
 {
     struct grammar* new = create_grammar();
 

@@ -143,7 +143,15 @@ int main(int argc, char** argv) {
             aux = as_right_normal_form(g); 
 		}
 		else{
-			aux = take_out_unreachable(g);
+			struct grammar * aux2 = take_out_unreachable(g);
+			while(has_unproductive_productions(aux2)){
+				int a = 4/0;
+				aux = aux2;
+				aux2 = take_out_unproductive_production(g);
+				destroy_grammar(aux);
+			}
+			aux = aux2;
+			
 		}
 		destroy_grammar(g);
         g = aux;

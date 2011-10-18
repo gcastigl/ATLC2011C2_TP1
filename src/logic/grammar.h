@@ -70,5 +70,9 @@ bool symbol_is_not_terminal(struct grammar* grammar, char symbol);
 
 struct grammar* take_out_unreachable(struct grammar* source);
 
+bool has_unproductive_productions(struct grammar* grammar);
+
+struct grammar* take_out_unproductive_production(struct grammar* source);
+
 #endif
 
