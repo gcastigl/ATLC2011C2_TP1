@@ -138,12 +138,16 @@ int main(int argc, char** argv) {
         strcpy(pngFileName + pngFileNameLen - 2, "png");
 
         FILE* file = fopen(filename, "w");
+		struct grammar* aux;
         if (g->alignment != RIGHT_ALIGNED) {
-            struct grammar* right = as_right_normal_form(g); 
-            destroy_grammar(g);
-            g = right;
+            aux = as_right_normal_form(g); 
+		}
+		else{
+			aux = take_out_unreachable(g);
+		}
+		destroy_grammar(g);
+        g = aux;
         
-        }
         automata_output(file, g);
         mkdir("output", S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
         sprintf(execCmd, "dot -T png -o output/%s %s",
