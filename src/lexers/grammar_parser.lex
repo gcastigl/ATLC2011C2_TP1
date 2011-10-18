@@ -105,6 +105,8 @@ TRANS_C     \[label\=\"
     ,       { 
                 if (!distinguished) {
                     // Error
+                    printf("Error. There is no distinguished symbol.\n");
+                    exit(1);
                 }
                 BEGIN(inBeginProduction);
             }
@@ -113,36 +115,44 @@ TRANS_C     \[label\=\"
 <inBeginProduction>{
     {CHAR}  {
                 if (!used[(int)yytext[0]] || terminal[(int)yytext[0]]) {
-                    // Error
+                    printf("Error. The symbol used in the left part of a production is not a non terminal symbol.\n");
+                    exit(1);
                 }
                 if (left_part != '\0') {
+                    printf("Error. There is more than one symbol in the left part of a production.\n");
+                    exit(1);
                     // Error
                 }
                 left_part = yytext[0];
             }
     ->      {
                 if (left_part == '\0') {
-                    // Error
+                    printf("Error. There is nothing in the left part of a production.\n");
+                    exit(1);
                 }
                 right = right_part[0] = right_part[1] = '\0';
                 BEGIN(inEndProduction);
             }
     \}      {
                 if (left_part != '\0') {
-                    // Error
+                    printf("Error. There is an error in the productions.\n");
+                    exit(1);
                 }
             }
 }
 <inEndProduction>{
     {CHAR}  {
                 if (!used[(int)yytext[0]]) {
-                    // Error
+                    printf("Error. There is an undeclared symbol in one of the productions.\n");
+                    exit(1);
                 }
                 right_part[right++] = yytext[0];
             }
     ,       {
                 if (right == 0) {
                     // Error
+                    printf("Error. There is nothing in the right part of a production.\n");
+                    exit(1);
                 }
                 if (add_production(g, left_part, right_part) != 0) {
                     printf("Error. The grammar is not regular.\n");
@@ -154,24 +164,24 @@ TRANS_C     \[label\=\"
     \|      {
                 if (add_production(g, left_part, right_part) != 0) {
                     printf("Error. The grammar is not regular.\n");
+                    exit(1);
                 }
                 right = right_part[0] = right_part[1] = '\0';
             }
 
     \}      {
                 if (right == 0) {
-                    // Error
+                    printf("Error. There is nothing in the right part of a production.\n");
+                    exit(1);
                 }
                 if (add_production(g, left_part, right_part) != 0) {
                     printf("Error. The grammar is not regular.\n");
+                    exit(1);
                 }
                 BEGIN(inGrammar);
             }
     \\      {
-                if (!used[(int)yytext[0]]) {
-                    // Error
-                }
-                 if (add_symbol(g, true, yytext[0]) != 0) {
+                if (add_symbol(g, true, yytext[0]) != 0) {
                     printf("Error. Dude, you used lambda as a non-terminal.\n");
                     exit(1);
                 }
