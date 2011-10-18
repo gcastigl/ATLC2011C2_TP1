@@ -178,7 +178,6 @@ static int baseName(char* path) {
 
 void print_ascii_table_for_automata(struct automata* a) {
 	// rows los estados  y en cols  las rsímbolos terminales dentro de cada celda  el estado al que se dirije
-	a->number_transitions--;
 	printf("st/tr\t");
 	for (int i = 0; i < a->number_chars; i++) {
 		printf("%c\t", a->chars[i]);
