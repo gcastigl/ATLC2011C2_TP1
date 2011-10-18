@@ -338,6 +338,9 @@ static struct grammar* reverse_productions(struct grammar* source) {
         ){
             if (new_production[0] == source->distinguished_symbol) {
                 new_production[0] = '\t';
+                if (new_production[1] == source->distinguished_symbol) {
+                    new_production[1] = '\t';
+                }
             }
 
             char temp = new_production[0];

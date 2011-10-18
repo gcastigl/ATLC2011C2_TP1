@@ -140,20 +140,17 @@ int main(int argc, char** argv) {
         FILE* file = fopen(filename, "w");
         if (g->alignment != RIGHT_ALIGNED) {
             struct grammar* right = as_right_normal_form(g); 
-            automata_output(file, right);
+            destroy_grammar(g);
+            g = right;
         
-            destroy_grammar(right);
-        } else {
-            automata_output(file, g);
-            mkdir("output", S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
-            sprintf(execCmd, "dot -T png -o output/%s %s",
-                pngFileName,
-                filename
-            );
-            fclose(file);
-            system(execCmd);
         }
-        
+        automata_output(file, g);
+        mkdir("output", S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+        sprintf(execCmd, "dot -T png -o output/%s %s",
+            pngFileName, filename
+        );
+        fclose(file);
+        system(execCmd);
         destroy_grammar(g);
     }
 
