@@ -333,15 +333,16 @@ static struct grammar* reverse_productions(struct grammar* source) {
         new_production[1] = source->productions[i].right_part[0].representation;
         new_production[2] = source->productions[i].right_part[1].representation;
 
-        if (new_production[1] == source->distinguished_symbol) {
-            new_production[1] = '\t';
-        }
-
         if (source->productions[i].right_part[0].terminal == false &&
             source->productions[i].right_part[1].terminal == true
         ){
+            if (new_production[0] == source->distinguished_symbol) {
+                new_production[0] = '\t';
+            }
+
             char temp = new_production[0];
             new_production[0] = new_production[1];
+
             if( source->productions[i].right_part[1].representation != '\\' ){
                 new_production[1] = new_production[2];
                 new_production[2] = temp;
