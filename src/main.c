@@ -138,22 +138,21 @@ int main(int argc, char** argv) {
         strcpy(pngFileName + pngFileNameLen - 2, "png");
 
         FILE* file = fopen(filename, "w");
-		struct grammar* aux;
+        struct grammar* aux;
         if (g->alignment != RIGHT_ALIGNED) {
             aux = as_right_normal_form(g); 
-		}
-		else{
-			struct grammar * aux2 = take_out_unreachable(g);
-			while(has_unproductive_productions(aux2)){
-				int a = 4/0;
-				aux = aux2;
-				aux2 = take_out_unproductive_production(g);
-				destroy_grammar(aux);
-			}
-			aux = aux2;
-			
-		}
-		destroy_grammar(g);
+        }
+        else{
+            struct grammar * aux2 = take_out_unreachable(g);
+            while(has_unproductive_productions(aux2)){
+                aux = aux2;
+                aux2 = take_out_unproductive_production(g);
+                destroy_grammar(aux);
+            }
+            aux = aux2;
+            
+        }
+        destroy_grammar(g);
         g = aux;
         
         automata_output(file, g);
@@ -185,30 +184,30 @@ static int baseName(char* path) {
 }
 
 void print_ascii_table_for_automata(struct automata* a) {
-	// rows los estados  y en cols  las rsímbolos terminales dentro de cada celda  el estado al que se dirije
-	printf("st/tr\t");
-	for (int i = 0; i < a->number_chars; i++) {
-		printf("%c\t", a->chars[i]);
-	}
-	printf("\n");
-	int printed = 0;
-	for (int i = 0; i < a->number_states; i++) {					// For each state
-		printf("q%d\t", a->states[i]);
-		for (int j = 0; j < a->number_chars; j++) {					// for each char
-			printed = 0;
-			for (int k = 0; k < a->number_transitions; k++) {		// search the transition that starts from state i and uses char j
-				if (a->transitions[k].from == i && a->transitions[k].symbol == a->chars[j]) {
-					printf("q%d", a->transitions[k].to);
-					printed = 1;
-				}
-			}
-			if (!printed) {											// If no transition was found, print x
-				printf("x");
-			}
+    // rows los estados  y en cols  las rsímbolos terminales dentro de cada celda  el estado al que se dirije
+    printf("st/tr\t");
+    for (int i = 0; i < a->number_chars; i++) {
+        printf("%c\t", a->chars[i]);
+    }
+    printf("\n");
+    int printed = 0;
+    for (int i = 0; i < a->number_states; i++) {                    // For each state
+        printf("q%d\t", a->states[i]);
+        for (int j = 0; j < a->number_chars; j++) {                    // for each char
+            printed = 0;
+            for (int k = 0; k < a->number_transitions; k++) {        // search the transition that starts from state i and uses char j
+                if (a->transitions[k].from == i && a->transitions[k].symbol == a->chars[j]) {
+                    printf("q%d", a->transitions[k].to);
+                    printed = 1;
+                }
+            }
+            if (!printed) {                                            // If no transition was found, print x
+                printf("x");
+            }
                         printf("\t");
-		}
-		printf("\n");
-	}
+        }
+        printf("\n");
+    }
     return;
 }
 
