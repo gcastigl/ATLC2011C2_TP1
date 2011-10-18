@@ -26,11 +26,13 @@ void automata_output(FILE* outfile, struct grammar* grammar) {
         }
     }
 
+    fprintf(outfile, "node[shape=circle, color=white] NodeA [label=\"\"];\n\t");
+
     for (int i = 0; i < grammar->number_symbols; i++) {
 
         if (grammar->symbols[i].terminal == false) {
             int index = integer_map[(int)grammar->symbols[i].representation];
-            fprintf(outfile, "node[shape=circle] Node%d [label=\"%d\"];\n\t",
+            fprintf(outfile, "node[shape=circle, color=black] Node%d [label=\"%d\"];\n\t",
                 index, index
             );
         }
@@ -41,6 +43,8 @@ void automata_output(FILE* outfile, struct grammar* grammar) {
     );
 
     fprintf(outfile, "//Transiciones\n\t");
+
+    fprintf(outfile, "NodeA->Node%d [label=\"\"];\n\t", integer_map[(int)grammar->distinguished_symbol]);
 
     for (int i = 0; i < grammar->number_productions; i++) {
 

@@ -198,13 +198,14 @@ void print_ascii_table_for_automata(struct automata* a) {
 			printed = 0;
 			for (int k = 0; k < a->number_transitions; k++) {		// search the transition that starts from state i and uses char j
 				if (a->transitions[k].from == i && a->transitions[k].symbol == a->chars[j]) {
-					printf("q%d\t", a->transitions[k].to);
+					printf("q%d", a->transitions[k].to);
 					printed = 1;
 				}
 			}
 			if (!printed) {											// If no transition was found, print x
-				printf("x\t");
+				printf("x");
 			}
+                        printf("\t");
 		}
 		printf("\n");
 	}
