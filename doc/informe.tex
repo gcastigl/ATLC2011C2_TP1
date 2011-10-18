@@ -136,7 +136,12 @@ es el símbolo no terminal asociado y cuya parte derecha es simplemente el símb
 del autómata pasa a ser el símbolo distinguido.
  
       \subsection{Conversion de gramática a gramática alineada a derecha}
-            QUE LO HAGA ALGUIEN QUE SEPA BIEN QUE HACE EL ALGORITMO
+            El algoritmo se basa  en la inversión de todas las producciones de tipo $A->Bc$  a  $B->cA$. Primero se crea un nuevo símbolo terminal, $M$.
+Toda producción que no genere de su lado derecho un símbolo no terminal generará lo mismo de antes con $M$ concatenado (en particular si la producción era 
+a $\lambda$ se generará una unitaria a $M$). Luego, se invierten todas las producciones como se ha explicado previamente. Tras hacer esto, $M$ pasa a ser el 
+nuevo símbolo distinguido. Con esta nueva gramática, se eliminan todos los símbolos inalcanzables y no productivos (utilizando un $BFS$). Por último se 
+eliminan las producciones unitarias. Esto se logra recorriendo todas las producciones mientras haya unitarias, y para cada una que lo sea, se reemplaza 
+el no terminal a la derecha de dicha producción por todas las posibles partes derechas de sus producciones. 
       \subsection{Output}
             El \textit{output} no presentó una complicación mayor ya que al contar con los formatos de salida 
             requeridos y al tener los datos ordenados en estructuras correctas, el proceso fue casi intuitivo.
