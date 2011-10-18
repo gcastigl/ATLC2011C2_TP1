@@ -177,6 +177,30 @@ static int baseName(char* path) {
 }
 
 void print_ascii_table_for_automata(struct automata* a) {
+	// rows los estados  y en cols  las rsímbolos terminales dentro de cada celda  el estado al que se dirije
+	a->number_transitions--;
+	printf("st/tr\t");
+	for (int i = 0; i < a->number_chars; i++) {
+		printf("%c\t", a->chars[i]);
+	}
+	printf("\n");
+	int printed = 0;
+	for (int i = 0; i < a->number_states; i++) {					// For each state
+		printf("q%d\t", a->states[i]);
+		for (int j = 0; j < a->number_chars; j++) {					// for each char
+			printed = 0;
+			for (int k = 0; k < a->number_transitions; k++) {		// search the transition that starts from state i and uses char j
+				if (a->transitions[k].from == i && a->transitions[k].symbol == a->chars[j]) {
+					printf("q%d\t", a->transitions[k].to);
+					printed = 1;
+				}
+			}
+			if (!printed) {											// If no transition was found, print x
+				printf("x\t");
+			}
+		}
+		printf("\n");
+	}
     return;
 }
 
